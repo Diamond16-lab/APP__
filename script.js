@@ -1,2 +1,3 @@
-// Código JS si necesitas interacciones futuras
-console.log("Petronexus clon cargado correctamente");
+document.getElementById("toggleBtn").addEventListener("click", () => {
+  document.getElementById("sidebar").classList.toggle("collapsed");
+});
