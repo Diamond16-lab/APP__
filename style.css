@@ -7,6 +7,7 @@
 body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #f4f4f4;
+  overflow: hidden; /* Evita el scroll global innecesario */
 }
 
 .container {
@@ -19,8 +20,9 @@ body {
   background-color: #1e1e2f;
   color: white;
   padding: 20px 10px;
-  transition: width 0.3s;
+  transition: width 0.3s ease-in-out; /* Mejora la transición para suavidad */
   position: relative;
+  flex-shrink: 0; /* Evita que el sidebar se encoja cuando no debe */
 }
 
 .sidebar.collapsed {
@@ -30,7 +32,7 @@ body {
 .sidebar .toggle-btn {
   position: absolute;
   top: 20px;
-  right: -25px;
+  right: -25px; /* Mantiene la posición del botón */
   background-color: #1e1e2f;
   width: 50px;
   height: 50px;
@@ -40,20 +42,32 @@ body {
   justify-content: center;
   cursor: pointer;
   color: white;
+  z-index: 1000; /* Asegura que el botón esté siempre visible */
 }
 
 .brand {
   text-align: center;
   font-size: 22px;
   margin-bottom: 30px;
+  white-space: nowrap; /* Evita que el texto se rompa */
+  overflow: hidden; /* Oculta el texto que se desborda */
+  transition: opacity 0.3s ease-in-out; /* Transición para el texto de la marca */
+}
+
+.sidebar.collapsed .brand {
+  opacity: 0; /* Oculta la marca cuando está colapsado */
+  width: 0; /* Ajusta el ancho para que no ocupe espacio */
+  padding: 0; /* Asegura que no haya padding residual */
+  margin: 0; /* Asegura que no haya margen residual */
 }
 
 .menu {
   list-style: none;
+  padding: 0; /* Asegura que no haya padding por defecto */
 }
 
 .menu li {
-  margin: 20px 0;
+  margin: 10px 0; /* Ajuste el margen vertical entre elementos del menú */
 }
 
 .menu li a {
@@ -61,46 +75,90 @@ body {
   color: white;
   display: flex;
   align-items: center;
-  padding: 8px 10px;
+  padding: 12px 10px; /* Ajuste el padding para un mejor click area */
   border-radius: 6px;
-  transition: background 0.2s;
+  transition: background 0.2s ease, padding 0.2s ease; /* Añade transición al padding */
 }
 
-.menu li a:hover {
+.menu li a:hover,
+.menu li a.active { /* Añade estilo para el enlace activo */
   background-color: #2c2c3e;
 }
 
 .menu li i {
   font-size: 20px;
   margin-right: 10px;
+  min-width: 20px; /* Asegura un ancho mínimo para el icono */
+  text-align: center;
+}
+
+.menu li span {
+    white-space: nowrap; /* Evita que el texto del menú se rompa */
+    overflow: hidden; /* Oculta el texto que se desborda */
+    transition: opacity 0.3s ease-in-out, width 0.3s ease-in-out; /* Transición para el texto del menú */
 }
 
 .sidebar.collapsed .menu li span {
-  display: none;
-}
-
-.sidebar.collapsed .brand {
-  display: none;
+  opacity: 0; /* Oculta el texto del menú cuando está colapsado */
+  width: 0; /* Ajusta el ancho para que no ocupe espacio */
+  padding: 0;
+  margin: 0;
 }
 
 .main-content {
   flex-grow: 1;
   padding: 30px;
-  overflow-y: auto;
+  overflow-y: auto; /* Permite scroll solo en el contenido principal */
+  transition: margin-left 0.3s ease-in-out; /* Agrega transición para el margen */
+  background-color: white; /* Fondo blanco para el contenido principal */
 }
+
+/* Ajuste del margen del contenido principal cuando el sidebar está colapsado */
+/* Esto hace que el main-content se mueva para llenar el espacio */
+.sidebar + .main-content { /* Selector adyacente, útil si el main-content es hermano del sidebar */
+    margin-left: 0; /* Reinicia si había un margen previo */
+}
+
 
 section {
   margin-bottom: 50px;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  display: none; /* Por defecto, todas las secciones están ocultas */
 }
 
+section:first-of-type {
+  display: block; /* Muestra la primera sección por defecto (gestionado también por JS) */
+}
+
+
+/* Media queries para responsividad */
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
     z-index: 999;
     height: 100%;
+    left: -240px; /* Oculta el sidebar por completo por defecto en móviles */
+    width: 240px; /* Asegura el ancho completo para cuando se muestre */
+  }
+
+  .sidebar.collapsed {
+    left: 0; /* Muestra el sidebar cuando está "colapsado" (en realidad, mostrado) */
+    width: 240px; /* Asegura que se vea completo al "colapsar" */
+  }
+
+  .sidebar .toggle-btn {
+      right: 20px; /* Ajusta la posición del botón para móviles */
   }
 
   .main-content {
-    margin-left: 0;
+    margin-left: 0; /* El contenido principal no necesita margen si el sidebar está fijo y oculto */
+    width: 100%; /* Ocupa el ancho completo */
   }
+
+  /* Si quieres el efecto de overlay, no ajustar margin-left en main-content.
+     El sidebar aparecerá por encima del contenido. */
 }
