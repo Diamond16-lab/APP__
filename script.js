@@ -18,11 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------------------
 
     // --------------------------------------------------------------------
-    // TU CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES (COMPLETO Y AJUSTADO)
+    // TU CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES (AJUSTADO)
     // --------------------------------------------------------------------
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleBtn');
-    const menuLinks = document.querySelectorAll('.menu a'); // Selecciona TODOS los enlaces del menú (incluyendo submenú)
+    const menuLinks = document.querySelectorAll('.menu a'); // Selecciona TODOS los enlaces del menú
     const sections = document.querySelectorAll('main section');
 
     // Referencias al modal
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     submenuToggles.forEach(toggle => {
         toggle.addEventListener('click', (event) => {
-            event.preventDefault(); // Evita la navegación predeterminada
+            event.preventDefault(); // Evita la navegación predeterminada para el toggle
 
             const parentLi = toggle.closest('li.has-submenu');
             if (parentLi) {
@@ -68,6 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
             }
+            
+            // También se debe mostrar la sección principal de "Carga gasolina"
+            // cuando se despliega el submenú.
+            const targetId = toggle.getAttribute('href');
+            showSection(targetId);
+            
+            // Remover 'active' de todos y añadirlo al actual para resaltado visual
+            menuLinks.forEach(item => item.classList.remove('active'));
+            toggle.classList.add('active');
         });
     });
 
@@ -80,52 +89,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 section.style.display = 'none';
             }
         });
+        // IMPORTANTE: Asegurarse de que el modal esté oculto cuando se muestre una sección
+        if (accessModal.style.display === 'flex') {
+            accessModal.style.display = 'none';
+        }
     };
 
-    // Manejar clics en los enlaces del menú
+    // Manejar clics en los enlaces del menú (incluyendo los del submenú)
     menuLinks.forEach(link => {
-        // Asegurarse de que este event listener solo afecte a enlaces que NO son toggles de submenú
-        // Los toggles de submenú se manejan con el 'submenuToggles.forEach' de arriba.
+        // Excluimos los 'submenu-toggle' porque su lógica ya está arriba
         if (!link.classList.contains('submenu-toggle')) {
             link.addEventListener('click', (event) => {
                 event.preventDefault(); // Prevenir la navegación predeterminada
                 const targetId = link.getAttribute('href');
 
-                // Si el enlace es 'Subir carga', mostramos el modal en lugar de la sección
+                // LÓGICA PRINCIPAL: Mostrar el modal SOLO si el clic es en '#subir'
                 if (targetId === '#subir') {
-                    // Ocultar todas las secciones primero
+                    // Ocultar todas las secciones antes de mostrar el modal
                     sections.forEach(section => { section.style.display = 'none'; });
-                    // Mostrar el modal
-                    accessModal.style.display = 'flex'; // Usamos 'flex' para centrarlo con CSS
-                    
-                    // Asegurarse de que el enlace "Subir carga" esté activo en el sidebar
-                    menuLinks.forEach(item => item.classList.remove('active'));
-                    link.classList.add('active'); 
+                    accessModal.style.display = 'flex'; // Muestra el modal
 
-                    // Asegurarse de que el submenú padre se mantenga abierto y activo
+                    // Asegura que "Subir carga" esté visualmente activo
+                    menuLinks.forEach(item => item.classList.remove('active'));
+                    link.classList.add('active');
+
+                    // Asegura que el submenú padre se mantenga abierto si se cerró por algún clic externo
                     const parentSubmenu = link.closest('.submenu');
                     if (parentSubmenu) {
-                        const parentToggle = parentSubmenu.previousElementSibling; // El elemento 'a.submenu-toggle' antes del submenú
+                        const parentToggle = parentSubmenu.previousElementSibling;
                         if (parentToggle && !parentToggle.classList.contains('active')) {
                             parentToggle.classList.add('active');
-                            parentSubmenu.classList.add('active'); 
+                            parentSubmenu.classList.add('active');
                         }
                     }
 
                 } else {
-                    // Para los demás enlaces, mostramos la sección normalmente
+                    // Para cualquier otro enlace que no sea 'Subir carga', muestra su sección correspondiente
                     showSection(targetId);
 
+                    // Actualiza el estado activo en el sidebar
                     menuLinks.forEach(item => item.classList.remove('active'));
                     link.classList.add('active');
 
-                    // Asegurarse de que el submenú padre se mantenga abierto y activo
+                    // Asegura que el submenú padre se mantenga abierto si se cerró por algún clic externo
                     const parentSubmenu = link.closest('.submenu');
                     if (parentSubmenu) {
-                        const parentToggle = parentSubmenu.previousElementSibling; 
+                        const parentToggle = parentSubmenu.previousElementSibling;
                         if (parentToggle && !parentToggle.classList.contains('active')) {
                             parentToggle.classList.add('active');
-                            parentSubmenu.classList.add('active'); 
+                            parentSubmenu.classList.add('active');
                         }
                     }
                 }
@@ -133,24 +145,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ** CRUCIAL: No mostrar ninguna sección al cargar la página (comentar o eliminar la inicialización) **
-    // Esto asegura que al cargar la página, NINGUNA sección se muestre por defecto,
-    // y el usuario verá el estado inicial que tú decidas.
-    /*
-    const initialLink = document.querySelector('.menu a:not(.submenu-toggle)');
-    if (initialLink) {
-        const initialTargetId = initialLink.getAttribute('href');
-        showSection(initialTargetId);
-        initialLink.classList.add('active');
+    // Inicializar la página: Mostrar la primera sección (Carga gasolina) al cargar
+    // y asegurar que el modal NO aparezca.
+    const initialSectionLink = document.querySelector('.menu a[href="#carga"]');
+    if (initialSectionLink) {
+        showSection(initialSectionLink.getAttribute('href'));
+        initialSectionLink.classList.add('active');
+        // Asegúrate de que el modal esté oculto al inicio
+        accessModal.style.display = 'none';
     }
-    */
     // --------------------------------------------------------------------
     // FIN DEL CÓDIGO PARA EL SIDEBAR Y SECCIONES
     // --------------------------------------------------------------------
 
 
     // --------------------------------------------------------------------
-    // Lógica del Modal (¡COMPLETO!)
+    // Lógica del Modal (COMPLETO Y SIN CAMBIOS)
     // --------------------------------------------------------------------
 
     // Cerrar el modal al hacer clic en la "x"
