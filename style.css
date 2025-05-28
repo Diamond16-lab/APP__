@@ -110,7 +110,7 @@ body {
   padding: 30px;
   overflow-y: auto; /* Permite scroll solo en el contenido principal */
   transition: margin-left 0.3s ease-in-out; /* Agrega transición para el margen */
-  background-color: white; /* Fondo blanco para el contenido principal */
+  background-color: #f4f4f4; /* Fondo blanco para el contenido principal */
 }
 
 /* Ajuste del margen del contenido principal cuando el sidebar está colapsado */
@@ -119,46 +119,7 @@ body {
     margin-left: 0; /* Reinicia si había un margen previo */
 }
 
-
-section {
-  margin-bottom: 50px;
-  padding: 20px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  display: none; /* Por defecto, todas las secciones están ocultas */
-}
-
-section:first-of-type {
-  display: block; /* Muestra la primera sección por defecto (gestionado también por JS) */
-}
-
-
-/* Media queries para responsividad */
-@media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    z-index: 999;
-    height: 100%;
-    left: -240px; /* Oculta el sidebar por completo por defecto en móviles */
-    width: 240px; /* Asegura el ancho completo para cuando se muestre */
-  }
-
-  .sidebar.collapsed {
-    left: 0; /* Muestra el sidebar cuando está "colapsado" (en realidad, mostrado) */
-    width: 240px; /* Asegura que se vea completo al "colapsar" */
-  }
-
-  .sidebar .toggle-btn {
-      right: 20px; /* Ajusta la posición del botón para móviles */
-  }
-
-  .main-content {
-    margin-left: 0; /* El contenido principal no necesita margen si el sidebar está fijo y oculto */
-    width: 100%; /* Ocupa el ancho completo */
-  }
-  /* Estilos para el submenú */
+/* Estilos para el submenú - CONSOLIDADOS AQUÍ FUERA DE CUALQUIER MEDIA QUERY */
 .submenu {
   list-style: none;
   padding-left: 30px; /* Indentación para los elementos del submenú */
@@ -208,12 +169,48 @@ section:first-of-type {
 }
 
 /* Es posible que necesites ajustar el padding de los elementos del menú principal
-   cuando el sidebar está colapsado para que los iconos se vean bien.
-   Esto es una sugerencia, puedes omitirlo si se ve bien: */
+   cuando el sidebar está colapsado para que los iconos se vean bien. */
 .sidebar.collapsed .menu li a {
   justify-content: center; /* Centra los iconos cuando el texto está oculto */
   padding: 12px; /* Ajusta el padding para mantener el tamaño del botón */
 }
-  /* Si quieres el efecto de overlay, no ajustar margin-left en main-content.
-     El sidebar aparecerá por encima del contenido. */
+
+/* Estilos para las secciones principales */
+section {
+  margin-bottom: 50px;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #fff; /* Asegura un fondo blanco para cada sección */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  display: none; /* Por defecto, todas las secciones están ocultas */
+}
+
+section:first-of-type {
+  /* display: block; -- Esta línea se gestiona mejor con JS para el control inicial de secciones */
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    z-index: 999;
+    height: 100%;
+    left: -240px; /* Oculta el sidebar por completo por defecto en móviles */
+    width: 240px; /* Asegura el ancho completo para cuando se muestre */
+  }
+
+  .sidebar.collapsed {
+    left: 0; /* Muestra el sidebar cuando está "colapsado" (en realidad, mostrado) */
+    width: 240px; /* Asegura que se vea completo al "colapsar" */
+  }
+
+  .sidebar .toggle-btn {
+      right: 20px; /* Ajusta la posición del botón para móviles */
+  }
+
+  .main-content {
+    margin-left: 0; /* El contenido principal no necesita margen si el sidebar está fijo y oculto */
+    width: 100%; /* Ocupa el ancho completo */
+  }
 }
