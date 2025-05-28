@@ -1,94 +1,128 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------------------
-    // REGISTRO DEL SERVICE WORKER
+    // CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER
     // --------------------------------------------------------------------
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/service-worker.js')
-                .then(reg => console.log('Service Worker registrado:', reg))
-                .catch(err => console.error('Error al registrar el Service Worker:', err));
+                .then(registration => {
+                    console.log('Service Worker registrado con éxito:', registration);
+                })
+                .catch(error => {
+                    console.error('Fallo el registro del Service Worker:', error);
+                });
         });
     }
+    // --------------------------------------------------------------------
+    // FIN DEL CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER
+    // --------------------------------------------------------------------
 
     // --------------------------------------------------------------------
-    // MANEJO DEL SIDEBAR Y NAVEGACIÓN DE SECCIONES
+    // TU CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES
     // --------------------------------------------------------------------
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleBtn');
-    const menuLinks = document.querySelectorAll('.menu a');
+    const menuLinks = document.querySelectorAll('.menu a'); // Selecciona TODOS los enlaces del menú
     const sections = document.querySelectorAll('main section');
+
+    // Función para alternar la visibilidad del sidebar
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+    }
+
+    // ** Lógica para menús desplegables **
     const submenuToggles = document.querySelectorAll('.submenu-toggle');
 
-    // Alternar sidebar
-    toggleBtn?.addEventListener('click', () => {
-        sidebar?.classList.toggle('collapsed');
-    });
-
-    // Alternar submenús (solo uno abierto a la vez)
     submenuToggles.forEach(toggle => {
-        toggle.addEventListener('click', e => {
-            e.preventDefault();
+        toggle.addEventListener('click', (event) => {
+            // Evita que el enlace del toggle navegue si tiene un href
+            event.preventDefault();
 
             const parentLi = toggle.closest('li.has-submenu');
-            const submenu = parentLi?.querySelector('.submenu');
+            if (parentLi) {
+                const submenu = parentLi.querySelector('.submenu');
+                if (submenu) {
+                    // Alternar la clase 'active' en el submenú
+                    submenu.classList.toggle('active');
+                    // Alternar la clase 'active' en el toggle para rotar la flecha
+                    toggle.classList.toggle('active');
 
-            if (submenu) {
-                const isActive = submenu.classList.contains('active');
-
-                // Cerrar todos los submenús
-                submenuToggles.forEach(otherToggle => {
-                    const otherParent = otherToggle.closest('li.has-submenu');
-                    const otherSubmenu = otherParent?.querySelector('.submenu');
-                    otherToggle.classList.remove('active');
-                    otherSubmenu?.classList.remove('active');
-                });
-
-                // Si no estaba activo, abrir el clickeado
-                if (!isActive) {
-                    toggle.classList.add('active');
-                    submenu.classList.add('active');
+                    // Opcional: Cerrar otros submenús si solo quieres uno abierto a la vez
+                    submenuToggles.forEach(otherToggle => {
+                        if (otherToggle !== toggle) {
+                            const otherParentLi = otherToggle.closest('li.has-submenu');
+                            if (otherParentLi) {
+                                const otherSubmenu = otherParentLi.querySelector('.submenu');
+                                if (otherSubmenu && otherSubmenu.classList.contains('active')) {
+                                    otherSubmenu.classList.remove('active');
+                                    otherToggle.classList.remove('active');
+                                }
+                            }
+                        }
+                    });
                 }
             }
         });
     });
 
-    // Mostrar la sección correspondiente
-    function showSection(targetId) {
+    // Función para mostrar la sección activa y ocultar las demás
+    const showSection = (targetId) => {
         sections.forEach(section => {
-            section.style.display = `#${section.id}` === targetId ? 'block' : 'none';
+            if (`#${section.id}` === targetId) {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
         });
-    }
+    };
 
-    // Manejar clics en los enlaces del menú (excluye toggles)
+    // Manejar clics en los enlaces del menú (ahora solo los que no son toggles)
     menuLinks.forEach(link => {
+        // Asegurarse de que este event listener solo afecte a enlaces que NO son toggles de submenú
         if (!link.classList.contains('submenu-toggle')) {
-            link.addEventListener('click', e => {
-                e.preventDefault();
-
+            link.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevenir la navegación predeterminada
                 const targetId = link.getAttribute('href');
-                if (!targetId) return;
+
+                // Antes de mostrar la nueva sección, oculta todas las demás
+                sections.forEach(section => {
+                    section.style.display = 'none';
+                });
 
                 showSection(targetId);
 
-                // Actualizar clases 'active'
+                // Remover 'active' de todos los enlaces del menú principal
                 menuLinks.forEach(item => item.classList.remove('active'));
+                // Añadir 'active' al enlace clickeado
                 link.classList.add('active');
 
-                // Mantener submenús abiertos si es necesario
+                // Opcional: Asegurarse de que el submenú padre se mantenga abierto y activo
                 const parentSubmenu = link.closest('.submenu');
-                const parentToggle = parentSubmenu?.previousElementSibling;
-
-                parentToggle?.classList.add('active');
-                parentSubmenu?.classList.add('active');
+                if (parentSubmenu) {
+                    const parentToggle = parentSubmenu.previousElementSibling; // El elemento 'a.submenu-toggle' antes del submenú
+                    if (parentToggle && !parentToggle.classList.contains('active')) {
+                        parentToggle.classList.add('active');
+                        parentSubmenu.classList.add('active'); // Asegura que el submenú se mantenga abierto
+                    }
+                }
             });
         }
     });
 
-    // Mostrar sección inicial al cargar
-    const firstLink = document.querySelector('.menu a:not(.submenu-toggle)');
-    if (firstLink) {
-        const target = firstLink.getAttribute('href');
-        showSection(target);
-        firstLink.classList.add('active');
+    // ** MODIFICACIÓN AQUÍ: Eliminar o comentar la inicialización de la primera sección **
+    // Si no quieres que se muestre ninguna sección al cargar la página,
+    // puedes eliminar o comentar el siguiente bloque de código.
+    /*
+    const initialLink = document.querySelector('.menu a:not(.submenu-toggle)');
+    if (initialLink) {
+        const initialTargetId = initialLink.getAttribute('href');
+        showSection(initialTargetId);
+        initialLink.classList.add('active');
     }
+    */
+    // --------------------------------------------------------------------
+    // FIN DEL CÓDIGO PARA EL SIDEBAR Y SECCIONES
+    // --------------------------------------------------------------------
 });
