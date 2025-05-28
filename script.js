@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const submenu = parentLi.querySelector('.submenu');
                 if (submenu) {
                     submenu.classList.toggle('active');
-                    toggle.classList.toggle('active');
+                    toggle.classList.toggle('active'); // Esto añade/remueve la clase 'active' al toggle, lo que rota la flecha.
 
                     // Opcional: Cerrar otros submenús si solo quieres uno abierto a la vez
                     submenuToggles.forEach(otherToggle => {
@@ -69,14 +69,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            // También se debe mostrar la sección principal de "Carga gasolina"
-            // cuando se despliega el submenú.
+            // Cuando se hace clic en el toggle del submenú, si no es para mostrar un modal,
+            // se debe mostrar la sección principal asociada.
             const targetId = toggle.getAttribute('href');
-            showSection(targetId);
+            // SOLO mostramos la sección si no estamos activando un modal (no tiene #subir o #reportes)
+            if (targetId !== '#subir' && targetId !== '#reportes') {
+                showSection(targetId);
+            }
             
-            // Remover 'active' de todos y añadirlo al actual para resaltado visual
+            // Remover 'active' de todos los enlaces de sección y añadirlo al actual para resaltado visual
             menuLinks.forEach(item => item.classList.remove('active'));
-            toggle.classList.add('active');
+            toggle.classList.add('active'); // El toggle también se resalta como activo.
         });
     });
 
@@ -104,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const targetId = link.getAttribute('href');
 
                 // LÓGICA PRINCIPAL: Mostrar el modal si el clic es en '#subir' O '#reportes'
-                if (targetId === '#subir' || targetId === '#reportes') { // <-- ¡CAMBIO AQUÍ!
+                if (targetId === '#subir' || targetId === '#reportes') {
                     // Ocultar todas las secciones antes de mostrar el modal
                     sections.forEach(section => { section.style.display = 'none'; });
                     accessModal.style.display = 'flex'; // Muestra el modal
@@ -113,13 +116,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     menuLinks.forEach(item => item.classList.remove('active'));
                     link.classList.add('active');
 
-                    // Asegura que el submenú padre se mantenga abierto si se cerró por algún clic externo
+                    // Asegura que el submenú padre se mantenga abierto y su flecha hacia arriba
                     const parentSubmenu = link.closest('.submenu');
                     if (parentSubmenu) {
                         const parentToggle = parentSubmenu.previousElementSibling;
-                        if (parentToggle && !parentToggle.classList.contains('active')) {
-                            parentToggle.classList.add('active');
+                        if (parentToggle) {
                             parentSubmenu.classList.add('active');
+                            parentToggle.classList.add('active'); // Esto asegura que la flecha se rote hacia arriba
                         }
                     }
 
@@ -131,36 +134,63 @@ document.addEventListener('DOMContentLoaded', () => {
                     menuLinks.forEach(item => item.classList.remove('active'));
                     link.classList.add('active');
 
-                    // Asegura que el submenú padre se mantenga abierto si se cerró por algún clic externo
-                    const parentSubmenu = link.closest('.submenu');
-                    if (parentSubmenu) {
-                        const parentToggle = parentSubmenu.previousElementSibling;
-                        if (parentToggle && !parentToggle.classList.contains('active')) {
-                            parentToggle.classList.add('active');
-                            parentSubmenu.classList.add('active');
+                    // Al hacer clic en un elemento que no es un modal (ej. #usuarios),
+                    // asegúrate de que el submenú de "Carga gasolina" esté cerrado
+                    // y su flecha apunte hacia abajo.
+                    submenuToggles.forEach(toggle => {
+                        const submenu = toggle.closest('li.has-submenu').querySelector('.submenu');
+                        if (submenu && submenu.classList.contains('active')) {
+                            submenu.classList.remove('active');
+                            toggle.classList.remove('active'); // Quita la clase 'active' para que la flecha se invierta
                         }
-                    }
+                    });
                 }
             });
         }
     });
 
-    // Inicializar la página: Mostrar la primera sección (Carga gasolina) al cargar
-    // y asegurar que el modal NO aparezca.
+    // --------------------------------------------------------------------
+    // INICIALIZACIÓN DE LA PÁGINA (¡AJUSTE CRÍTICO AQUÍ!)
+    // --------------------------------------------------------------------
+    // Al cargar la página:
+    // 1. Mostrar la sección inicial (ej. "Carga gasolina").
+    // 2. Asegurar que el modal esté oculto.
+    // 3. Asegurar que la flecha del submenú de "Carga gasolina" esté hacia abajo.
+
     const initialSectionLink = document.querySelector('.menu a[href="#carga"]');
     if (initialSectionLink) {
         showSection(initialSectionLink.getAttribute('href'));
-        initialSectionLink.classList.add('active');
-        // Asegúrate de que el modal esté oculto al inicio
-        accessModal.style.display = 'none';
+        // No añadimos la clase 'active' al initialSectionLink aquí,
+        // ya que es el toggle del submenú y queremos que la flecha esté hacia abajo.
+        // Solo si la sección fuera #carga misma y no un toggle para submenú, lo haríamos.
     }
+
+    // Asegúrate de que el modal esté oculto al inicio
+    accessModal.style.display = 'none';
+
+    // Asegúrate de que todos los submenús estén cerrados y sus flechas hacia abajo al inicio
+    submenuToggles.forEach(toggle => {
+        const submenu = toggle.closest('li.has-submenu').querySelector('.submenu');
+        if (submenu) {
+            submenu.classList.remove('active'); // Asegura que el submenú esté cerrado
+            toggle.classList.remove('active');   // Asegura que la flecha apunte hacia abajo
+        }
+    });
+
+    // Si quieres que "Carga gasolina" esté resaltada inicialmente
+    // sin que su flecha esté invertida, podemos añadir 'active' solo al texto o al li,
+    // o manejarlo de forma separada del toggle de flecha.
+    // Por ahora, solo nos aseguramos que no invierta la flecha.
+    // Puedes considerar añadir una clase 'initial-active' o similar para resaltar la entrada
+    // del menú "Carga gasolina" si es la sección predeterminada que se muestra,
+    // sin que afecte la flecha del submenú si está cerrado.
     // --------------------------------------------------------------------
-    // FIN DEL CÓDIGO PARA EL SIDEBAR Y SECCIONES
+    // FIN DE LA INICIALIZACIÓN
     // --------------------------------------------------------------------
 
 
     // --------------------------------------------------------------------
-    // Lógica del Modal (COMPLETO Y SIN CAMBIOS)
+    // Lógica del Modal (COMPLETO Y SIN CAMBIOS FUNCIONALES)
     // --------------------------------------------------------------------
 
     // Cerrar el modal al hacer clic en la "x"
@@ -200,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             accessModal.style.display = 'none';
         });
     }
-    // --------------------------------------------------------------------\
+    // --------------------------------------------------------------------
     // FIN Lógica del Modal
-    // --------------------------------------------------------------------\
+    // --------------------------------------------------------------------
 });
