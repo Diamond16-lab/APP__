@@ -1,124 +1,94 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------------------
-    // CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER
+    // REGISTRO DEL SERVICE WORKER
     // --------------------------------------------------------------------
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/service-worker.js')
-                .then(registration => {
-                    console.log('Service Worker registrado con éxito:', registration);
-                })
-                .catch(error => {
-                    console.error('Fallo el registro del Service Worker:', error);
-                });
+                .then(reg => console.log('Service Worker registrado:', reg))
+                .catch(err => console.error('Error al registrar el Service Worker:', err));
         });
     }
-    // --------------------------------------------------------------------
-    // FIN DEL CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER
-    // --------------------------------------------------------------------
-
 
     // --------------------------------------------------------------------
-    // CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES (¡Completo!)
+    // MANEJO DEL SIDEBAR Y NAVEGACIÓN DE SECCIONES
     // --------------------------------------------------------------------
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleBtn');
-    const menuLinks = document.querySelectorAll('.menu a'); // Selecciona todos los enlaces de menú
-    const sections = document.querySelectorAll('main section'); // Selecciona todas las secciones de contenido
+    const menuLinks = document.querySelectorAll('.menu a');
+    const sections = document.querySelectorAll('main section');
+    const submenuToggles = document.querySelectorAll('.submenu-toggle');
 
-    // Función para alternar la visibilidad del sidebar
-    if (toggleBtn && sidebar) {
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-        });
-    }
+    // Alternar sidebar
+    toggleBtn?.addEventListener('click', () => {
+        sidebar?.classList.toggle('collapsed');
+    });
 
-    // Lógica para menús desplegables
-    const submenuToggles = document.querySelectorAll('.submenu-toggle'); // Selecciona los enlaces que abren submenús
-
+    // Alternar submenús (solo uno abierto a la vez)
     submenuToggles.forEach(toggle => {
-        toggle.addEventListener('click', (event) => {
-            const parentLi = toggle.closest('li.has-submenu'); // Encuentra el <li> padre con la clase
-            if (parentLi) {
-                const submenu = parentLi.querySelector('.submenu'); // Encuentra el <ul>.submenu dentro
-                if (submenu) {
-                    event.preventDefault(); // Previene que el enlace #carga navegue
-                    
-                    // Alternar la clase 'active' para desplegar/contraer el submenú
-                    submenu.classList.toggle('active');
-                    // Alternar la clase 'active' en el propio toggle para rotar la flecha
-                    toggle.classList.toggle('active');
+        toggle.addEventListener('click', e => {
+            e.preventDefault();
 
-                    // Opcional: Cerrar otros submenús si solo quieres uno abierto a la vez
-                    submenuToggles.forEach(otherToggle => {
-                        if (otherToggle !== toggle) {
-                            const otherParentLi = otherToggle.closest('li.has-submenu');
-                            if (otherParentLi) {
-                                const otherSubmenu = otherParentLi.querySelector('.submenu');
-                                if (otherSubmenu && otherSubmenu.classList.contains('active')) {
-                                    otherSubmenu.classList.remove('active');
-                                    otherToggle.classList.remove('active');
-                                }
-                            }
-                        }
-                    });
+            const parentLi = toggle.closest('li.has-submenu');
+            const submenu = parentLi?.querySelector('.submenu');
+
+            if (submenu) {
+                const isActive = submenu.classList.contains('active');
+
+                // Cerrar todos los submenús
+                submenuToggles.forEach(otherToggle => {
+                    const otherParent = otherToggle.closest('li.has-submenu');
+                    const otherSubmenu = otherParent?.querySelector('.submenu');
+                    otherToggle.classList.remove('active');
+                    otherSubmenu?.classList.remove('active');
+                });
+
+                // Si no estaba activo, abrir el clickeado
+                if (!isActive) {
+                    toggle.classList.add('active');
+                    submenu.classList.add('active');
                 }
             }
         });
     });
 
-    // Función para mostrar la sección activa y ocultar las demás
-    const showSection = (targetId) => {
+    // Mostrar la sección correspondiente
+    function showSection(targetId) {
         sections.forEach(section => {
-            if (`#${section.id}` === targetId.substring(1)) { // Comparar solo el ID (sin el #)
-                section.style.display = 'block';
-            } else {
-                section.style.display = 'none';
-            }
+            section.style.display = `#${section.id}` === targetId ? 'block' : 'none';
         });
-    };
+    }
 
-    // Manejar clics en los enlaces del menú (incluyendo los del submenú)
+    // Manejar clics en los enlaces del menú (excluye toggles)
     menuLinks.forEach(link => {
-        // Solo aplica esta lógica a los enlaces que NO son toggles de submenú
         if (!link.classList.contains('submenu-toggle')) {
-            link.addEventListener('click', (event) => {
-                event.preventDefault(); // Prevenir el comportamiento por defecto del enlace
-                const targetId = link.getAttribute('href'); // Obtener el ID de la sección a mostrar
+            link.addEventListener('click', e => {
+                e.preventDefault();
+
+                const targetId = link.getAttribute('href');
+                if (!targetId) return;
+
                 showSection(targetId);
 
-                // Remover 'active' de todos los enlaces y añadir al clickeado
+                // Actualizar clases 'active'
                 menuLinks.forEach(item => item.classList.remove('active'));
                 link.classList.add('active');
 
-                // Si un enlace de submenú fue clickeado, asegúrate de que el padre 'submenu-toggle' también esté 'active'
+                // Mantener submenús abiertos si es necesario
                 const parentSubmenu = link.closest('.submenu');
-                if (parentSubmenu) {
-                    const parentToggle = parentSubmenu.previousElementSibling; // El elemento 'a.submenu-toggle' antes del submenú
-                    if (parentToggle && !parentToggle.classList.contains('active')) {
-                        parentToggle.classList.add('active');
-                        parentSubmenu.classList.add('active'); // Asegura que el submenú se mantenga abierto
-                    }
-                }
+                const parentToggle = parentSubmenu?.previousElementSibling;
+
+                parentToggle?.classList.add('active');
+                parentSubmenu?.classList.add('active');
             });
         }
     });
 
-    // Inicializar: Mostrar la primera sección al cargar la página
-    // Asegurarse de que al inicio, la sección correspondiente a '#carga' se muestre
-    // Si tienes "Carga gasolina" como la primera opción, y quieres que se muestre,
-    // puedes usar el href de su toggle o la primera sección de contenido.
-    if (sections.length > 0) {
-        // Muestra la sección que corresponde al primer enlace del menú principal, o la primera sección de contenido
-        // Aquí asumimos que #carga es la primera sección de contenido que queremos ver por defecto
-        showSection('#carga'); 
-        // Activa el enlace correspondiente en el menú si es necesario
-        const initialLink = document.querySelector('.menu a[href="#carga"]');
-        if (initialLink) {
-             initialLink.classList.add('active');
-        }
+    // Mostrar sección inicial al cargar
+    const firstLink = document.querySelector('.menu a:not(.submenu-toggle)');
+    if (firstLink) {
+        const target = firstLink.getAttribute('href');
+        showSection(target);
+        firstLink.classList.add('active');
     }
-    // --------------------------------------------------------------------
-    // FIN DEL CÓDIGO PARA EL SIDEBAR Y SECCIONES
-    // --------------------------------------------------------------------
 });

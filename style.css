@@ -185,9 +185,12 @@ section {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   display: none; /* Por defecto, todas las secciones están ocultas */
 }
-  section:first-of-type {
+
+section:first-of-type {
   display: none; /* Controlado por JS si es necesario */
 }
+
+
 
 /* Media queries para responsividad */
 @media (max-width: 768px) {
