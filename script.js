@@ -50,40 +50,36 @@ document.addEventListener('DOMContentLoaded', () => {
             if (parentLi) {
                 const submenu = parentLi.querySelector('.submenu');
                 if (submenu) {
-                    submenu.classList.toggle('active');
-                    toggle.classList.toggle('active'); // Esto añade/remueve la clase 'active' al toggle, lo que rota la flecha.
+                    const isSubmenuActive = submenu.classList.contains('active');
 
-                    // Cerrar otros submenús si solo quieres uno abierto a la vez
+                    // Cerrar todos los demás submenús y resetear sus flechas
                     submenuToggles.forEach(otherToggle => {
-                        if (otherToggle !== toggle) {
-                            const otherParentLi = otherToggle.closest('li.has-submenu');
-                            if (otherParentLi) {
-                                const otherSubmenu = otherParentLi.querySelector('.submenu');
-                                if (otherSubmenu && otherSubmenu.classList.contains('active')) {
-                                    otherSubmenu.classList.remove('active');
-                                    otherToggle.classList.remove('active'); // Quita la clase 'active' para que su flecha se invierta
-                                }
+                        const otherParentLi = otherToggle.closest('li.has-submenu');
+                        if (otherParentLi) {
+                            const otherSubmenu = otherParentLi.querySelector('.submenu');
+                            if (otherSubmenu && otherSubmenu.classList.contains('active')) {
+                                otherSubmenu.classList.remove('active');
+                                otherToggle.classList.remove('active'); // Quita la clase 'active' para que su flecha se invierta
                             }
                         }
                     });
+
+                    // Si el submenú en el que se hizo clic NO estaba activo, ábrelo
+                    if (!isSubmenuActive) {
+                        submenu.classList.add('active');
+                        toggle.classList.add('active'); // Añade la clase 'active' para rotar la flecha
+                    } else {
+                        // Si SÍ estaba activo, ciérralo
+                        submenu.classList.remove('active');
+                        toggle.classList.remove('active'); // Quita la clase 'active' para que la flecha vuelva a su posición original
+                    }
                 }
             }
             
-            // Cuando se hace clic en el toggle del submenú, si no es para mostrar un modal,
-            // se debe mostrar la sección principal asociada.
-            const targetId = toggle.getAttribute('href');
-            // SOLO mostramos la sección si no estamos activando un modal (no tiene #subir o #reportes)
-            // Ya que #carga es un toggle, no queremos que muestre directamente la sección #carga si no se clickea en ella explícitamente.
-            // La sección #carga se mostrará por defecto al cargar la página.
-            // Este `if` es solo para evitar que un click en el toggle de '#carga' muestre la sección #carga de nuevo.
-            if (targetId !== '#subir' && targetId !== '#reportes') {
-                // showSection(targetId); // Comentado para evitar que el toggle cambie la sección
-            }
-            
             // Remover 'active' de todos los enlaces de sección y añadirlo al actual para resaltado visual
-            // (esto se aplica a los enlaces directos, no a los toggles de submenú si solo quieres resaltar secciones)
+            // (Esto se aplica a los enlaces directos, no a los toggles de submenú si solo quieres resaltar secciones)
             // menuLinks.forEach(item => item.classList.remove('active'));
-            // toggle.classList.add('active'); // No añadir 'active' al toggle principal, solo al submenú si está activo
+            // toggle.classList.add('active'); // Comentado, ya que el toggle en sí no es una "sección" para resaltar
         });
     });
 
@@ -123,9 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Asegura que el submenú padre esté abierto y su flecha hacia arriba
                     const parentSubmenu = link.closest('.submenu');
                     if (parentSubmenu) {
+                        parentSubmenu.classList.add('active');
                         const parentToggle = parentSubmenu.previousElementSibling;
                         if (parentToggle) {
-                            parentSubmenu.classList.add('active');
                             parentToggle.classList.add('active'); // Esto asegura que la flecha se rote hacia arriba
                         }
                     }
@@ -138,10 +134,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     menuLinks.forEach(item => item.classList.remove('active'));
                     link.classList.add('active');
 
-                    // Asegura que el submenú padre esté cerrado y su flecha hacia abajo
-                    // Si el enlace clicado no es un subelemento de 'Carga gasolina'
-                    const isInsideSubmenu = link.closest('.submenu');
-                    if (!isInsideSubmenu) {
+                    // Cerrar todos los submenús y resetear sus flechas si se hace clic en un enlace que no es parte de ellos
+                    const isSubmenuItem = link.closest('.submenu');
+                    if (!isSubmenuItem) {
                         submenuToggles.forEach(toggle => {
                             const submenu = toggle.closest('li.has-submenu').querySelector('.submenu');
                             if (submenu && submenu.classList.contains('active')) {
@@ -153,9 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Si es un subelemento, asegura que el submenú padre se mantenga abierto
                         const parentSubmenu = link.closest('.submenu');
                         if (parentSubmenu) {
+                            parentSubmenu.classList.add('active');
                             const parentToggle = parentSubmenu.previousElementSibling;
                             if (parentToggle) {
-                                parentSubmenu.classList.add('active');
                                 parentToggle.classList.add('active');
                             }
                         }
@@ -169,23 +164,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // INICIALIZACIÓN DE LA PÁGINA (¡AJUSTES PARA MODAL Y FLECHA!)
     // --------------------------------------------------------------------
     // Al cargar la página:
-    // 1. Asegurar que el modal esté oculto *inmediatamente*.
-    // 2. Mostrar la sección inicial (ej. "Carga gasolina").
-    // 3. Asegurar que todos los submenús estén cerrados y sus flechas hacia abajo.
+    // 1. Mostrar la sección inicial (Carga gasolina).
+    // 2. Asegurarse de que todos los submenús estén cerrados y sus flechas hacia abajo.
 
-    // 1. Ocultar el modal al inicio (antes de mostrar cualquier sección)
-    accessModal.style.display = 'none';
+    // No es necesario ocultar el modal aquí con JS si ya lo ocultamos en CSS.
+    // accessModal.style.display = 'none'; // Esta línea ahora es redundante si está en CSS.
 
-    // 2. Mostrar la sección inicial (Carga gasolina)
+    // Mostrar la sección inicial (Carga gasolina)
     const initialSectionLink = document.querySelector('.menu a[href="#carga"]');
     if (initialSectionLink) {
         showSection(initialSectionLink.getAttribute('href')); // Muestra la sección #carga
-        // No añadimos 'active' al initialSectionLink aquí, ya que es el toggle del submenú
-        // y queremos que su flecha esté hacia abajo por defecto (submenú cerrado).
-        // Podemos resaltar el enlace de otra manera si se desea que aparezca "activo"
-        // incluso cuando el submenú está cerrado. Por ahora, nos enfocamos en la flecha.
+        // Asegurar que el enlace del submenú principal (Carga gasolina) esté activo si quieres resaltarlo
+        // initialSectionLink.classList.add('active'); // Puedes descomentar si quieres que esté resaltado al inicio
     } else {
-        // En caso de que #carga no exista, mostrar la primera sección disponible
+        // En caso de que #carga no exista o no sea la primera, mostrar la primera sección disponible
         if (sections.length > 0) {
             showSection(`#${sections[0].id}`);
             const firstLink = document.querySelector(`.menu a[href="#${sections[0].id}"]`);
@@ -195,7 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 3. Asegúrate de que todos los submenús estén cerrados y sus flechas hacia abajo al inicio
+    // Asegúrate de que TODOS los submenús estén cerrados y sus flechas hacia abajo al inicio
+    // Iteramos sobre todos los toggles para asegurar que todos estén cerrados.
     submenuToggles.forEach(toggle => {
         const parentLi = toggle.closest('li.has-submenu');
         if (parentLi) {
@@ -213,13 +206,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --------------------------------------------------------------------
-    // Lógica del Modal (COMPLETO Y SIN CAMBIOS FUNCIONALES)
+    // Lógica del Modal (COMPLETO Y SIN CAMBIOS FUNCIONALES MAYORES)
     // --------------------------------------------------------------------
 
     // Cerrar el modal al hacer clic en la "x"
     if (closeButton) {
         closeButton.addEventListener('click', () => {
             accessModal.style.display = 'none';
+            // También puedes resetear el formulario aquí si lo deseas
+            accessForm.reset();
         });
     }
 
@@ -228,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         accessModal.addEventListener('click', (event) => {
             if (event.target === accessModal) { // Solo cierra si el clic fue en el overlay, no en el contenido
                 accessModal.style.display = 'none';
+                accessForm.reset(); // Limpiar el formulario al cerrar el modal
             }
         });
     }
