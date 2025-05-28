@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------------------
-    // INICIO DEL CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER
+    // CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER (¡DEBE ESTAR AQUÍ!)
     // --------------------------------------------------------------------
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --------------------------------------------------------------------
-    // TU CÓDIGO EXISTENTE PARA EL SIDEBAR Y CAMBIO DE SECCIONES
+    // TU CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES (¡DEBE ESTAR AQUÍ!)
     // --------------------------------------------------------------------
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleBtn');
@@ -63,6 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
         menuLinks[0].classList.add('active');
     }
     // --------------------------------------------------------------------
-    // FIN DE TU CÓDIGO EXISTENTE
+    // FIN DEL CÓDIGO PARA EL SIDEBAR Y SECCIONES
     // --------------------------------------------------------------------
 });
