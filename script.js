@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------------------
-    // CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER (¡DEBE ESTAR AQUÍ!)
+    // CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER
     // --------------------------------------------------------------------
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -19,12 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --------------------------------------------------------------------
-    // TU CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES (¡DEBE ESTAR AQUÍ!)
+    // CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES (¡Completo!)
     // --------------------------------------------------------------------
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleBtn');
-    const menuLinks = document.querySelectorAll('.menu a');
-    const sections = document.querySelectorAll('main section');
+    const menuLinks = document.querySelectorAll('.menu a'); // Selecciona todos los enlaces de menú
+    const sections = document.querySelectorAll('main section'); // Selecciona todas las secciones de contenido
 
     // Función para alternar la visibilidad del sidebar
     if (toggleBtn && sidebar) {
@@ -32,29 +32,21 @@ document.addEventListener('DOMContentLoaded', () => {
             sidebar.classList.toggle('collapsed');
         });
     }
-    document.addEventListener('DOMContentLoaded', () => {
-    // ... (Tu código existente para el Service Worker y el toggleBtn) ...
 
-    const sidebar = document.getElementById('sidebar');
-    const toggleBtn = document.getElementById('toggleBtn');
-    const menuLinks = document.querySelectorAll('.menu a');
-    const sections = document.querySelectorAll('main section');
-
-    // ** NUEVO: Lógica para menús desplegables **
-    const submenuToggles = document.querySelectorAll('.submenu-toggle');
+    // Lógica para menús desplegables
+    const submenuToggles = document.querySelectorAll('.submenu-toggle'); // Selecciona los enlaces que abren submenús
 
     submenuToggles.forEach(toggle => {
         toggle.addEventListener('click', (event) => {
-            const parentLi = toggle.closest('li.has-submenu');
+            const parentLi = toggle.closest('li.has-submenu'); // Encuentra el <li> padre con la clase
             if (parentLi) {
-                const submenu = parentLi.querySelector('.submenu');
+                const submenu = parentLi.querySelector('.submenu'); // Encuentra el <ul>.submenu dentro
                 if (submenu) {
-                    // Prevenir el comportamiento por defecto del enlace si no queremos navegar
-                    event.preventDefault(); 
+                    event.preventDefault(); // Previene que el enlace #carga navegue
                     
-                    // Alternar la clase 'active' en el submenú
+                    // Alternar la clase 'active' para desplegar/contraer el submenú
                     submenu.classList.toggle('active');
-                    // Alternar la clase 'active' en el toggle para rotar la flecha
+                    // Alternar la clase 'active' en el propio toggle para rotar la flecha
                     toggle.classList.toggle('active');
 
                     // Opcional: Cerrar otros submenús si solo quieres uno abierto a la vez
@@ -75,21 +67,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ** MODIFICACIÓN: Ajustar el manejo de clics para enlaces de submenú **
-    // Asegurarse de que solo se manejen los enlaces que no son toggles de submenú
+    // Función para mostrar la sección activa y ocultar las demás
+    const showSection = (targetId) => {
+        sections.forEach(section => {
+            if (`#${section.id}` === targetId.substring(1)) { // Comparar solo el ID (sin el #)
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        });
+    };
+
+    // Manejar clics en los enlaces del menú (incluyendo los del submenú)
     menuLinks.forEach(link => {
-        if (!link.classList.contains('submenu-toggle')) { // Ignorar los toggles del submenú
+        // Solo aplica esta lógica a los enlaces que NO son toggles de submenú
+        if (!link.classList.contains('submenu-toggle')) {
             link.addEventListener('click', (event) => {
-                event.preventDefault();
-                const targetId = link.getAttribute('href');
+                event.preventDefault(); // Prevenir el comportamiento por defecto del enlace
+                const targetId = link.getAttribute('href'); // Obtener el ID de la sección a mostrar
                 showSection(targetId);
 
-                // Remover 'active' de todos los enlaces del menú principal
+                // Remover 'active' de todos los enlaces y añadir al clickeado
                 menuLinks.forEach(item => item.classList.remove('active'));
-                // Añadir 'active' al enlace clickeado
                 link.classList.add('active');
 
-                // Si un enlace de submenú es clickeado, asegúrate de que el padre 'submenu-toggle' también esté activo
+                // Si un enlace de submenú fue clickeado, asegúrate de que el padre 'submenu-toggle' también esté 'active'
                 const parentSubmenu = link.closest('.submenu');
                 if (parentSubmenu) {
                     const parentToggle = parentSubmenu.previousElementSibling; // El elemento 'a.submenu-toggle' antes del submenú
@@ -102,36 +104,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ... (El resto de tu código existente para showSection e inicialización) ...
-});
-    // Función para mostrar la sección activa y ocultar las demás
-    const showSection = (targetId) => {
-        sections.forEach(section => {
-            if (`#${section.id}` === targetId) {
-                section.style.display = 'block';
-            } else {
-                section.style.display = 'none';
-            }
-        });
-    };
-
-    // Manejar clics en los enlaces del menú
-    menuLinks.forEach(link => {
-        link.addEventListener('click', (event) => {
-            event.preventDefault();
-            const targetId = link.getAttribute('href');
-            showSection(targetId);
-
-            menuLinks.forEach(item => item.classList.remove('active'));
-            link.classList.add('active');
-        });
-    });
-
     // Inicializar: Mostrar la primera sección al cargar la página
-    if (menuLinks.length > 0) {
-        const initialTargetId = menuLinks[0].getAttribute('href');
-        showSection(initialTargetId);
-        menuLinks[0].classList.add('active');
+    // Asegurarse de que al inicio, la sección correspondiente a '#carga' se muestre
+    // Si tienes "Carga gasolina" como la primera opción, y quieres que se muestre,
+    // puedes usar el href de su toggle o la primera sección de contenido.
+    if (sections.length > 0) {
+        // Muestra la sección que corresponde al primer enlace del menú principal, o la primera sección de contenido
+        // Aquí asumimos que #carga es la primera sección de contenido que queremos ver por defecto
+        showSection('#carga'); 
+        // Activa el enlace correspondiente en el menú si es necesario
+        const initialLink = document.querySelector('.menu a[href="#carga"]');
+        if (initialLink) {
+             initialLink.classList.add('active');
+        }
     }
     // --------------------------------------------------------------------
     // FIN DEL CÓDIGO PARA EL SIDEBAR Y SECCIONES
