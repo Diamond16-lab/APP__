@@ -18,14 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------------------
 
     // --------------------------------------------------------------------
-    // TU CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES (COMPLETO)
+    // TU CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES (COMPLETO Y AJUSTADO)
     // --------------------------------------------------------------------
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleBtn');
-    const menuLinks = document.querySelectorAll('.menu a'); // Selecciona TODOS los enlaces del menú
+    const menuLinks = document.querySelectorAll('.menu a'); // Selecciona TODOS los enlaces del menú (incluyendo submenú)
     const sections = document.querySelectorAll('main section');
 
-    // Referencias al modal (¡NUEVO!)
+    // Referencias al modal
     const accessModal = document.getElementById('accessModal');
     const closeButton = document.querySelector('.close-button');
     const accessForm = document.getElementById('accessForm');
@@ -39,20 +39,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Lógica para menús desplegables (¡MANTENER ESTO!)
+    // Lógica para menús desplegables
     const submenuToggles = document.querySelectorAll('.submenu-toggle');
 
     submenuToggles.forEach(toggle => {
         toggle.addEventListener('click', (event) => {
-            event.preventDefault(); // Evita que el enlace del toggle navegue si tiene un href
+            event.preventDefault(); // Evita la navegación predeterminada
 
             const parentLi = toggle.closest('li.has-submenu');
             if (parentLi) {
                 const submenu = parentLi.querySelector('.submenu');
                 if (submenu) {
-                    // Alternar la clase 'active' en el submenú
                     submenu.classList.toggle('active');
-                    // Alternar la clase 'active' en el toggle para rotar la flecha
                     toggle.classList.toggle('active');
 
                     // Opcional: Cerrar otros submenús si solo quieres uno abierto a la vez
@@ -73,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Función para mostrar la sección activa y ocultar las demás (¡MANTENER ESTO!)
+    // Función para mostrar la sección activa y ocultar las demás
     const showSection = (targetId) => {
         sections.forEach(section => {
             if (`#${section.id}` === targetId) {
@@ -84,9 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Manejar clics en los enlaces del menú (¡Ajustado para el modal!)
+    // Manejar clics en los enlaces del menú
     menuLinks.forEach(link => {
         // Asegurarse de que este event listener solo afecte a enlaces que NO son toggles de submenú
+        // Los toggles de submenú se manejan con el 'submenuToggles.forEach' de arriba.
         if (!link.classList.contains('submenu-toggle')) {
             link.addEventListener('click', (event) => {
                 event.preventDefault(); // Prevenir la navegación predeterminada
@@ -98,9 +97,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     sections.forEach(section => { section.style.display = 'none'; });
                     // Mostrar el modal
                     accessModal.style.display = 'flex'; // Usamos 'flex' para centrarlo con CSS
-                    // Quitar active de todos los enlaces del menú
+                    
+                    // Asegurarse de que el enlace "Subir carga" esté activo en el sidebar
                     menuLinks.forEach(item => item.classList.remove('active'));
-                    link.classList.add('active'); // Marcar "Subir carga" como activo
+                    link.classList.add('active'); 
+
+                    // Asegurarse de que el submenú padre se mantenga abierto y activo
+                    const parentSubmenu = link.closest('.submenu');
+                    if (parentSubmenu) {
+                        const parentToggle = parentSubmenu.previousElementSibling; // El elemento 'a.submenu-toggle' antes del submenú
+                        if (parentToggle && !parentToggle.classList.contains('active')) {
+                            parentToggle.classList.add('active');
+                            parentSubmenu.classList.add('active'); 
+                        }
+                    }
+
                 } else {
                     // Para los demás enlaces, mostramos la sección normalmente
                     showSection(targetId);
@@ -111,10 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Asegurarse de que el submenú padre se mantenga abierto y activo
                     const parentSubmenu = link.closest('.submenu');
                     if (parentSubmenu) {
-                        const parentToggle = parentSubmenu.previousElementSibling; // El elemento 'a.submenu-toggle' antes del submenú
+                        const parentToggle = parentSubmenu.previousElementSibling; 
                         if (parentToggle && !parentToggle.classList.contains('active')) {
                             parentToggle.classList.add('active');
-                            parentSubmenu.classList.add('active'); // Asegura que el submenú se mantenga abierto
+                            parentSubmenu.classList.add('active'); 
                         }
                     }
                 }
@@ -122,8 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ** CRUCIAL: Eliminar o comentar la inicialización de la primera sección **
-    // Esto asegura que al cargar la página, NINGUNA sección se muestre por defecto.
+    // ** CRUCIAL: No mostrar ninguna sección al cargar la página (comentar o eliminar la inicialización) **
+    // Esto asegura que al cargar la página, NINGUNA sección se muestre por defecto,
+    // y el usuario verá el estado inicial que tú decidas.
     /*
     const initialLink = document.querySelector('.menu a:not(.submenu-toggle)');
     if (initialLink) {
@@ -138,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --------------------------------------------------------------------
-    // Lógica del Modal (¡NUEVO Y COMPLETO!)
+    // Lógica del Modal (¡COMPLETO!)
     // --------------------------------------------------------------------
 
     // Cerrar el modal al hacer clic en la "x"
@@ -151,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cerrar el modal si se hace clic fuera del contenido del modal
     if (accessModal) {
         accessModal.addEventListener('click', (event) => {
-            if (event.target === accessModal) {
+            if (event.target === accessModal) { // Solo cierra si el clic fue en el overlay, no en el contenido
                 accessModal.style.display = 'none';
             }
         });
@@ -167,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log('Datos de acceso capturados:');
             console.log('Usuario:', username);
-            // console.log('Contraseña:', password); // Por seguridad, no imprimas la contraseña en consolas de producción
+            // console.log('Contraseña:', password); // Por seguridad, NO imprimas la contraseña en consolas de producción
 
             // En un entorno real, aquí se haría la llamada a tu API de backend.
             // Por ahora, solo simularemos la acción y cerraremos el modal.

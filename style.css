@@ -43,102 +43,149 @@ body {
   justify-content: center;
   cursor: pointer;
   color: white;
-  z-index: 1000; /* Asegura que el botón esté siempre visible */
+  z-index: 10; /* Asegura que el botón esté por encima de otros elementos */
 }
 
 .brand {
   text-align: center;
   font-size: 22px;
   margin-bottom: 30px;
-  white-space: nowrap; /* Evita que el texto se rompa */
-  overflow: hidden; /* Oculta el texto que se desborda */
-  transition: opacity 0.3s ease-in-out; /* Transición para el texto de la marca */
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .sidebar.collapsed .brand {
-  opacity: 0; /* Oculta la marca cuando está colapsado */
-  width: 0; /* Ajusta el ancho para que no ocupe espacio */
-  padding: 0; /* Asegura que no haya padding residual */
-  margin: 0; /* Asegura que no haya margen residual */
+  opacity: 0;
 }
 
 .menu {
   list-style: none;
-  padding: 0; /* Asegura que no haya padding por defecto */
+  padding: 0;
 }
 
 .menu li {
-  margin: 10px 0; /* Ajuste el margen vertical entre elementos del menú */
+  margin-bottom: 10px;
 }
 
-.menu li a {
-  text-decoration: none;
+.menu a {
   color: white;
+  text-decoration: none;
   display: flex;
   align-items: center;
-  padding: 12px 10px; /* Ajuste el padding para un mejor click area */
-  border-radius: 6px;
-  transition: background 0.2s ease, padding 0.2s ease; /* Añade transición al padding */
+  padding: 12px 10px;
+  border-radius: 8px;
+  transition: background-color 0.3s, padding 0.3s ease-in-out;
+  white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
 }
 
-.menu li a:hover,
-.menu li a.active { /* Añade estilo para el enlace activo */
+.menu a:hover {
   background-color: #2c2c3e;
 }
 
-.menu li i {
+.menu a.active {
+  background-color: #007bff; /* Color para el elemento activo */
+}
+
+.menu a i {
   font-size: 20px;
-  margin-right: 10px;
-  min-width: 20px; /* Asegura un ancho mínimo para el icono */
-  text-align: center;
+  margin-right: 15px;
+  transition: margin-right 0.3s ease-in-out;
 }
 
-.menu li span {
-    white-space: nowrap; /* Evita que el texto del menú se rompa */
-    overflow: hidden; /* Oculta el texto que se desborda */
-    transition: opacity 0.3s ease-in-out, width 0.3s ease-in-out; /* Transición para el texto del menú */
+.sidebar.collapsed .menu a i {
+  margin-right: 0; /* Oculta el margen del icono cuando el sidebar se colapsa */
 }
 
-.sidebar.collapsed .menu li span {
-  opacity: 0; /* Oculta el texto del menú cuando está colapsado */
-  width: 0; /* Ajusta el ancho para que no ocupe espacio */
-  padding: 0;
-  margin: 0;
-}
-
-.main-content {
-  flex-grow: 1;
-  padding: 30px;
-  overflow-y: auto; /* Permite scroll solo en el contenido principal */
-  transition: margin-left 0.3s ease-in-out; /* Agrega transición para el margen */
-  background-color: #f4f4f4; /* Fondo blanco para el contenido principal */
-}
-
-/* Ajuste del margen del contenido principal cuando el sidebar está colapsado */
-.sidebar + .main-content {
-    margin-left: 0;
-}
-
-/* Estilos para el submenú */
-.submenu {
-  list-style: none;
-  padding-left: 30px;
-  max-height: 0; /* Oculta el submenú por defecto */
+.menu a span {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out, width 0.3s ease-in-out;
   overflow: hidden;
-  transition: max-height 0.3s ease-in-out;
-  background-color: #1a1a28;
-  margin-top: 5px;
-  border-radius: 0 0 6px 6px;
+  width: auto;
+}
+
+.sidebar.collapsed .menu a span {
+  opacity: 0;
+  width: 0; /* Oculta el texto del span */
+}
+
+/* Estilos para el main-content */
+.main-content {
+  flex-grow: 1; /* Permite que el contenido principal ocupe el espacio restante */
+  padding: 20px;
+  overflow-y: auto; /* Permite scroll vertical si el contenido es largo */
+  transition: margin-left 0.3s; /* Transición para cuando el sidebar se colapsa */
+}
+
+/* Ajuste para que el main-content se mueva para llenar el espacio */
+.sidebar + .main-content { /* Selector adyacente, útil si el main-content es hermano del sidebar */
+    margin-left: 0; /* Reinicia si había un margen previo */
+}
+
+
+section {
+  margin-bottom: 50px;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  display: none; /* Por defecto, todas las secciones están ocultas */
+}
+
+/* La primera sección se mostrará por JS, no por CSS.
+   Quité la regla: section:first-of-type { display: block; }
+   para que JS tenga control total al cargar la página.
+*/
+
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    z-index: 999;
+    height: 100%;
+    left: -240px; /* Oculta el sidebar por completo por defecto en móviles */
+    width: 240px; /* Asegura el ancho completo para cuando se muestre */
+  }
+
+  .sidebar.collapsed {
+    left: 0; /* Muestra el sidebar cuando está "colapsado" (en realidad, mostrado) */
+    width: 240px; /* Asegura el ancho completo para que se vea bien */
+  }
+
+  .sidebar .toggle-btn {
+    right: 20px; /* Ajusta la posición del botón para móviles */
+  }
+
+  .main-content {
+    margin-left: 0; /* No hay margen izquierdo en móviles */
+  }
+}
+
+/* Estilos para Submenú */
+.has-submenu .submenu-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.submenu {
+    list-style: none;
+    padding: 0;
+    margin-left: 15px; /* Indentación para los elementos del submenú */
+    overflow: hidden;
+    max-height: 0; /* Oculto por defecto */
+    transition: max-height 0.3s ease-in-out;
 }
 
 .submenu li a {
-  padding: 10px 10px 10px 0;
-  font-size: 14px;
+    padding: 10px 10px; /* Ajusta el padding para elementos del submenú */
+    font-size: 15px; /* Tamaño de fuente ligeramente más pequeño */
 }
 
 .submenu li a i {
-  font-size: 16px;
-  margin-right: 8px;
+    font-size: 16px; /* Ajusta el tamaño de los iconos del submenú */
+    margin-right: 8px;
 }
 
 /* Estilos para mostrar el submenú */
@@ -148,13 +195,13 @@ body {
 
 /* Estilos para el ícono de flecha */
 .arrow-icon {
-  margin-left: auto;
-  transition: transform 0.3s ease-in-out;
+  margin-left: auto; /* Empuja la flecha hacia la derecha */
+  transition: transform 0.3s ease-in-out; /* Transición suave para la rotación */
 }
 
 /* Rotar la flecha cuando el submenú está activo */
 .submenu-toggle.active .arrow-icon {
-  transform: rotate(180deg);
+  transform: rotate(180deg); /* Rota la flecha 180 grados */
 }
 
 /* Ajuste para los spans cuando el sidebar está colapsado y hay submenús */
@@ -165,64 +212,19 @@ body {
     margin: 0;
 }
 .sidebar.collapsed .has-submenu .arrow-icon {
-    margin-left: 0;
+    margin-left: 0; /* Restablece el margen para que el icono se quede cerca del borde */
 }
 
-/* Ajuste para los enlaces del menú principal cuando el sidebar está colapsado */
-.sidebar.collapsed .menu li a {
-  justify-content: center;
-  padding: 12px;
-}
-
-/* Estilos para las secciones principales */
-section {
-  margin-bottom: 50px;
-  padding: 20px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  background-color: #fff; /* Asegura un fondo blanco para cada sección */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  display: none; /* Por defecto, todas las secciones están ocultas */
-}
-
-/* Esta regla ya no debería ser necesaria si JS maneja la visibilidad */
-/* section:first-of-type {
-  display: block;
-} */
-
-/* Media queries para responsividad */
-@media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    z-index: 999;
-    height: 100%;
-    left: -240px;
-    width: 240px;
-  }
-
-  .sidebar.collapsed {
-    left: 0;
-    width: 240px;
-  }
-
-  .sidebar .toggle-btn {
-      right: 20px;
-  }
-
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-  }
 /* Estilos para la ventana modal (pop-up) */
 .modal-overlay {
-    display: none; /* Oculto por defecto */
+    display: none; /* Oculto por defecto, JS lo mostrará con 'flex' */
     position: fixed; /* Cubre toda la ventana del navegador */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente oscuro */
-    display: flex;
+    display: flex; /* Usamos flex para centrar el contenido */
     justify-content: center;
     align-items: center;
     z-index: 1000; /* Asegura que esté por encima de todo lo demás */
@@ -306,5 +308,4 @@ section {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
-}
 }
