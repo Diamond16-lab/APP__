@@ -103,13 +103,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 event.preventDefault(); // Prevenir la navegación predeterminada
                 const targetId = link.getAttribute('href');
 
-                // LÓGICA PRINCIPAL: Mostrar el modal SOLO si el clic es en '#subir'
-                if (targetId === '#subir') {
+                // LÓGICA PRINCIPAL: Mostrar el modal si el clic es en '#subir' O '#reportes'
+                if (targetId === '#subir' || targetId === '#reportes') { // <-- ¡CAMBIO AQUÍ!
                     // Ocultar todas las secciones antes de mostrar el modal
                     sections.forEach(section => { section.style.display = 'none'; });
                     accessModal.style.display = 'flex'; // Muestra el modal
 
-                    // Asegura que "Subir carga" esté visualmente activo
+                    // Asegura que el enlace clickeado esté visualmente activo
                     menuLinks.forEach(item => item.classList.remove('active'));
                     link.classList.add('active');
 
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                 } else {
-                    // Para cualquier otro enlace que no sea 'Subir carga', muestra su sección correspondiente
+                    // Para cualquier otro enlace que no sea 'Subir carga' o 'Reportes', muestra su sección correspondiente
                     showSection(targetId);
 
                     // Actualiza el estado activo en el sidebar
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
             accessModal.style.display = 'none';
         });
     }
-    // --------------------------------------------------------------------
+    // --------------------------------------------------------------------\
     // FIN Lógica del Modal
-    // --------------------------------------------------------------------
+    // --------------------------------------------------------------------\
 });
