@@ -1,3 +1,4 @@
+/* style.css (Versión corregida y completa) */
 * {
   margin: 0;
   padding: 0;
@@ -114,30 +115,29 @@ body {
 }
 
 /* Ajuste del margen del contenido principal cuando el sidebar está colapsado */
-/* Esto hace que el main-content se mueva para llenar el espacio */
-.sidebar + .main-content { /* Selector adyacente, útil si el main-content es hermano del sidebar */
-    margin-left: 0; /* Reinicia si había un margen previo */
+.sidebar + .main-content {
+    margin-left: 0;
 }
 
-/* Estilos para el submenú - CONSOLIDADOS AQUÍ FUERA DE CUALQUIER MEDIA QUERY */
+/* Estilos para el submenú */
 .submenu {
   list-style: none;
-  padding-left: 30px; /* Indentación para los elementos del submenú */
+  padding-left: 30px;
   max-height: 0; /* Oculta el submenú por defecto */
-  overflow: hidden; /* Asegura que el contenido desbordado se oculte */
-  transition: max-height 0.3s ease-in-out; /* Transición suave para el despliegue */
-  background-color: #1a1a28; /* Un color ligeramente diferente para el submenú */
-  margin-top: 5px; /* Pequeño margen superior */
-  border-radius: 0 0 6px 6px; /* Bordes redondeados solo abajo */
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  background-color: #1a1a28;
+  margin-top: 5px;
+  border-radius: 0 0 6px 6px;
 }
 
 .submenu li a {
-  padding: 10px 10px 10px 0; /* Ajusta el padding para los enlaces del submenú */
-  font-size: 14px; /* Un poco más pequeño para el submenú */
+  padding: 10px 10px 10px 0;
+  font-size: 14px;
 }
 
 .submenu li a i {
-  font-size: 16px; /* Ajusta el tamaño de los iconos del submenú */
+  font-size: 16px;
   margin-right: 8px;
 }
 
@@ -148,13 +148,13 @@ body {
 
 /* Estilos para el ícono de flecha */
 .arrow-icon {
-  margin-left: auto; /* Empuja la flecha hacia la derecha */
-  transition: transform 0.3s ease-in-out; /* Transición suave para la rotación */
+  margin-left: auto;
+  transition: transform 0.3s ease-in-out;
 }
 
 /* Rotar la flecha cuando el submenú está activo */
 .submenu-toggle.active .arrow-icon {
-  transform: rotate(180deg); /* Rota la flecha 180 grados */
+  transform: rotate(180deg);
 }
 
 /* Ajuste para los spans cuando el sidebar está colapsado y hay submenús */
@@ -165,14 +165,13 @@ body {
     margin: 0;
 }
 .sidebar.collapsed .has-submenu .arrow-icon {
-    margin-left: 0; /* Restablece el margen para que el icono se quede cerca del borde */
+    margin-left: 0;
 }
 
-/* Es posible que necesites ajustar el padding de los elementos del menú principal
-   cuando el sidebar está colapsado para que los iconos se vean bien. */
+/* Ajuste para los enlaces del menú principal cuando el sidebar está colapsado */
 .sidebar.collapsed .menu li a {
-  justify-content: center; /* Centra los iconos cuando el texto está oculto */
-  padding: 12px; /* Ajusta el padding para mantener el tamaño del botón */
+  justify-content: center;
+  padding: 12px;
 }
 
 /* Estilos para las secciones principales */
@@ -186,11 +185,10 @@ section {
   display: none; /* Por defecto, todas las secciones están ocultas */
 }
 
-section:first-of-type {
-  display: none; /* Controlado por JS si es necesario */
-}
-
-
+/* Esta regla ya no debería ser necesaria si JS maneja la visibilidad */
+/* section:first-of-type {
+  display: block;
+} */
 
 /* Media queries para responsividad */
 @media (max-width: 768px) {
@@ -198,21 +196,21 @@ section:first-of-type {
     position: fixed;
     z-index: 999;
     height: 100%;
-    left: -240px; /* Oculta el sidebar por completo por defecto en móviles */
-    width: 240px; /* Asegura el ancho completo para cuando se muestre */
+    left: -240px;
+    width: 240px;
   }
 
   .sidebar.collapsed {
-    left: 0; /* Muestra el sidebar cuando está "colapsado" (en realidad, mostrado) */
-    width: 240px; /* Asegura que se vea completo al "colapsar" */
+    left: 0;
+    width: 240px;
   }
 
   .sidebar .toggle-btn {
-      right: 20px; /* Ajusta la posición del botón para móviles */
+      right: 20px;
   }
 
   .main-content {
-    margin-left: 0; /* El contenido principal no necesita margen si el sidebar está fijo y oculto */
-    width: 100%; /* Ocupa el ancho completo */
+    margin-left: 0;
+    width: 100%;
   }
 }

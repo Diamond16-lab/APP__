@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------------------
-    // CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER
+    // CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER (¡MANTENER ESTO!)
     // --------------------------------------------------------------------
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------------------
 
     // --------------------------------------------------------------------
-    // TU CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES
+    // TU CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES (Ajustado)
     // --------------------------------------------------------------------
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleBtn');
@@ -32,13 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ** Lógica para menús desplegables **
+    // Lógica para menús desplegables (¡MANTENER ESTO!)
     const submenuToggles = document.querySelectorAll('.submenu-toggle');
 
     submenuToggles.forEach(toggle => {
         toggle.addEventListener('click', (event) => {
-            // Evita que el enlace del toggle navegue si tiene un href
-            event.preventDefault();
+            event.preventDefault(); // Evita que el enlace del toggle navegue si tiene un href
 
             const parentLi = toggle.closest('li.has-submenu');
             if (parentLi) {
@@ -67,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Función para mostrar la sección activa y ocultar las demás
+    // Función para mostrar la sección activa y ocultar las demás (¡MANTENER ESTO!)
     const showSection = (targetId) => {
         sections.forEach(section => {
             if (`#${section.id}` === targetId) {
@@ -78,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Manejar clics en los enlaces del menú (ahora solo los que no son toggles)
+    // Manejar clics en los enlaces del menú (¡MANTENER ESTO!)
     menuLinks.forEach(link => {
         // Asegurarse de que este event listener solo afecte a enlaces que NO son toggles de submenú
         if (!link.classList.contains('submenu-toggle')) {
@@ -86,14 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 event.preventDefault(); // Prevenir la navegación predeterminada
                 const targetId = link.getAttribute('href');
 
-                // Antes de mostrar la nueva sección, oculta todas las demás
-                sections.forEach(section => {
-                    section.style.display = 'none';
-                });
+                // Ocultar todas las secciones antes de mostrar la nueva
+                // (Esto ya se hace dentro de showSection, pero un reset explícito no hace daño si lo tenías así)
+                // sections.forEach(section => { section.style.display = 'none'; });
 
                 showSection(targetId);
 
-                // Remover 'active' de todos los enlaces del menú principal
+                // Remover 'active' de todos los enlaces del menú principal (todos los .menu a)
                 menuLinks.forEach(item => item.classList.remove('active'));
                 // Añadir 'active' al enlace clickeado
                 link.classList.add('active');
@@ -111,9 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ** MODIFICACIÓN AQUÍ: Eliminar o comentar la inicialización de la primera sección **
-    // Si no quieres que se muestre ninguna sección al cargar la página,
-    // puedes eliminar o comentar el siguiente bloque de código.
+    // ** MODIFICACIÓN CRUCIAL: Eliminar o comentar la inicialización de la primera sección **
+    // Esto asegura que al cargar la página, NINGUNA sección se muestre por defecto.
     /*
     const initialLink = document.querySelector('.menu a:not(.submenu-toggle)');
     if (initialLink) {
