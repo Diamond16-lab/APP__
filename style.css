@@ -158,7 +158,62 @@ section:first-of-type {
     margin-left: 0; /* El contenido principal no necesita margen si el sidebar está fijo y oculto */
     width: 100%; /* Ocupa el ancho completo */
   }
+  /* Estilos para el submenú */
+.submenu {
+  list-style: none;
+  padding-left: 30px; /* Indentación para los elementos del submenú */
+  max-height: 0; /* Oculta el submenú por defecto */
+  overflow: hidden; /* Asegura que el contenido desbordado se oculte */
+  transition: max-height 0.3s ease-in-out; /* Transición suave para el despliegue */
+  background-color: #1a1a28; /* Un color ligeramente diferente para el submenú */
+  margin-top: 5px; /* Pequeño margen superior */
+  border-radius: 0 0 6px 6px; /* Bordes redondeados solo abajo */
+}
 
+.submenu li a {
+  padding: 10px 10px 10px 0; /* Ajusta el padding para los enlaces del submenú */
+  font-size: 14px; /* Un poco más pequeño para el submenú */
+}
+
+.submenu li a i {
+  font-size: 16px; /* Ajusta el tamaño de los iconos del submenú */
+  margin-right: 8px;
+}
+
+/* Estilos para mostrar el submenú */
+.submenu.active {
+  max-height: 200px; /* Altura máxima para mostrar el submenú. Ajusta si tienes muchos elementos */
+}
+
+/* Estilos para el ícono de flecha */
+.arrow-icon {
+  margin-left: auto; /* Empuja la flecha hacia la derecha */
+  transition: transform 0.3s ease-in-out; /* Transición suave para la rotación */
+}
+
+/* Rotar la flecha cuando el submenú está activo */
+.submenu-toggle.active .arrow-icon {
+  transform: rotate(180deg); /* Rota la flecha 180 grados */
+}
+
+/* Ajuste para los spans cuando el sidebar está colapsado y hay submenús */
+.sidebar.collapsed .has-submenu .submenu-toggle span {
+    opacity: 0;
+    width: 0;
+    padding: 0;
+    margin: 0;
+}
+.sidebar.collapsed .has-submenu .arrow-icon {
+    margin-left: 0; /* Restablece el margen para que el icono se quede cerca del borde */
+}
+
+/* Es posible que necesites ajustar el padding de los elementos del menú principal
+   cuando el sidebar está colapsado para que los iconos se vean bien.
+   Esto es una sugerencia, puedes omitirlo si se ve bien: */
+.sidebar.collapsed .menu li a {
+  justify-content: center; /* Centra los iconos cuando el texto está oculto */
+  padding: 12px; /* Ajusta el padding para mantener el tamaño del botón */
+}
   /* Si quieres el efecto de overlay, no ajustar margin-left en main-content.
      El sidebar aparecerá por encima del contenido. */
 }
