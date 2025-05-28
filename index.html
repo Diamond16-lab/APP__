@@ -33,14 +33,40 @@
           </ul>
         </li>
         <li><a href="#usuarios"><i class="bi bi-people"></i><span>Usuarios</span></a></li>
+        <li><a href="#admin-logs"><i class="bi bi-file-earmark-lock"></i><span>Logs de Acceso (Admin)</span></a></li>
       </ul>
     </aside>
 
     <main class="main-content">
-      <section id="carga"><h1>Carga de gasolina</h1></section>
+      <section id="carga">
+          <h1>Carga de gasolina</h1>
+          <p>Este es el formulario para cargar datos de gasolina después de iniciar sesión.</p>
+          <form id="gasolinaForm">
+              <div class="form-group">
+                  <label for="fechaCarga">Fecha de Carga:</label>
+                  <input type="date" id="fechaCarga" name="fechaCarga" required>
+              </div>
+              <div class="form-group">
+                  <label for="litros">Litros:</label>
+                  <input type="number" id="litros" name="litros" step="0.01" required>
+              </div>
+              <div class="form-group">
+                  <label for="costo">Costo Total:</label>
+                  <input type="number" id="costo" name="costo" step="0.01" required>
+              </div>
+              <button type="submit">Guardar Carga</button>
+          </form>
+      </section>
       <section id="subir"><h1>Subir carga</h1></section>
       <section id="reportes"><h1>Reportes</h1></section>
-      <section id="usuarios"><h1>Usuarios</h1></section>
+      <section id="usuarios"><h1>Gestión de Usuarios</h1></section>
+      <section id="admin-logs">
+          <h1>Logs de Acceso</h1>
+          <button id="refreshLogsBtn">Actualizar Logs</button>
+          <div id="logsContainer" style="margin-top: 20px;">
+              <p>Cargando logs...</p>
+          </div>
+      </section>
     </main>
   </div>
 
@@ -57,9 +83,10 @@
                     <label for="password">Contraseña:</label>
                     <input type="password" id="password" name="password" required>
                 </div>
-                <button type="submit">Acceder y Guardar</button>
+                <button type="submit">Acceder</button>
             </form>
         </div>
     </div>
-    </body>
+
+</body>
 </html>
