@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------------------
-    // CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER
+    // CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER (¡MANTENER ESTO!)
     // --------------------------------------------------------------------
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -18,14 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------------------
 
     // --------------------------------------------------------------------
-    // TU CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES
+    // TU CÓDIGO PARA EL SIDEBAR Y CAMBIO DE SECCIONES (COMPLETO)
     // --------------------------------------------------------------------
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleBtn');
-    const menuLinks = document.querySelectorAll('.menu a');
+    const menuLinks = document.querySelectorAll('.menu a'); // Selecciona TODOS los enlaces del menú
     const sections = document.querySelectorAll('main section');
 
-    // Referencias al modal
+    // Referencias al modal (¡NUEVO!)
     const accessModal = document.getElementById('accessModal');
     const closeButton = document.querySelector('.close-button');
     const accessForm = document.getElementById('accessForm');
@@ -39,21 +39,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Lógica para menús desplegables
+    // Lógica para menús desplegables (¡MANTENER ESTO!)
     const submenuToggles = document.querySelectorAll('.submenu-toggle');
 
     submenuToggles.forEach(toggle => {
         toggle.addEventListener('click', (event) => {
-            event.preventDefault();
+            event.preventDefault(); // Evita que el enlace del toggle navegue si tiene un href
 
             const parentLi = toggle.closest('li.has-submenu');
             if (parentLi) {
                 const submenu = parentLi.querySelector('.submenu');
                 if (submenu) {
+                    // Alternar la clase 'active' en el submenú
                     submenu.classList.toggle('active');
+                    // Alternar la clase 'active' en el toggle para rotar la flecha
                     toggle.classList.toggle('active');
 
-                    // Cerrar otros submenús
+                    // Opcional: Cerrar otros submenús si solo quieres uno abierto a la vez
                     submenuToggles.forEach(otherToggle => {
                         if (otherToggle !== toggle) {
                             const otherParentLi = otherToggle.closest('li.has-submenu');
@@ -71,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Función para mostrar la sección activa y ocultar las demás
+    // Función para mostrar la sección activa y ocultar las demás (¡MANTENER ESTO!)
     const showSection = (targetId) => {
         sections.forEach(section => {
             if (`#${section.id}` === targetId) {
@@ -82,8 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Manejar clics en los enlaces del menú
+    // Manejar clics en los enlaces del menú (¡Ajustado para el modal!)
     menuLinks.forEach(link => {
+        // Asegurarse de que este event listener solo afecte a enlaces que NO son toggles de submenú
         if (!link.classList.contains('submenu-toggle')) {
             link.addEventListener('click', (event) => {
                 event.preventDefault(); // Prevenir la navegación predeterminada
@@ -94,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Ocultar todas las secciones primero
                     sections.forEach(section => { section.style.display = 'none'; });
                     // Mostrar el modal
-                    accessModal.style.display = 'flex';
+                    accessModal.style.display = 'flex'; // Usamos 'flex' para centrarlo con CSS
                     // Quitar active de todos los enlaces del menú
                     menuLinks.forEach(item => item.classList.remove('active'));
                     link.classList.add('active'); // Marcar "Subir carga" como activo
@@ -105,12 +108,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     menuLinks.forEach(item => item.classList.remove('active'));
                     link.classList.add('active');
 
+                    // Asegurarse de que el submenú padre se mantenga abierto y activo
                     const parentSubmenu = link.closest('.submenu');
                     if (parentSubmenu) {
-                        const parentToggle = parentSubmenu.previousElementSibling;
+                        const parentToggle = parentSubmenu.previousElementSibling; // El elemento 'a.submenu-toggle' antes del submenú
                         if (parentToggle && !parentToggle.classList.contains('active')) {
                             parentToggle.classList.add('active');
-                            parentSubmenu.classList.add('active');
+                            parentSubmenu.classList.add('active'); // Asegura que el submenú se mantenga abierto
                         }
                     }
                 }
@@ -118,7 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // No mostrar ninguna sección al cargar la página (mantenemos esto)
+    // ** CRUCIAL: Eliminar o comentar la inicialización de la primera sección **
+    // Esto asegura que al cargar la página, NINGUNA sección se muestre por defecto.
     /*
     const initialLink = document.querySelector('.menu a:not(.submenu-toggle)');
     if (initialLink) {
@@ -133,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --------------------------------------------------------------------
-    // Lógica del Modal (¡NUEVO!)
+    // Lógica del Modal (¡NUEVO Y COMPLETO!)
     // --------------------------------------------------------------------
 
     // Cerrar el modal al hacer clic en la "x"
@@ -152,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Manejar el envío del formulario del modal
+    // Manejar el envío del formulario del modal (Frontend solamente por ahora)
     if (accessForm) {
         accessForm.addEventListener('submit', async (event) => {
             event.preventDefault(); // Prevenir el envío normal del formulario
@@ -160,45 +165,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const username = usernameInput.value;
             const password = passwordInput.value;
 
-            console.log('Intentando enviar datos de acceso:');
+            console.log('Datos de acceso capturados:');
             console.log('Usuario:', username);
-            console.log('Contraseña:', password); // En un entorno real, no loguearías la contraseña así.
+            // console.log('Contraseña:', password); // Por seguridad, no imprimas la contraseña en consolas de producción
 
-            // --------------------------------------------------------------
-            // IMPORTANTE: ESTA ES LA PARTE DEL BACKEND (PARA ALMACENAR EN DB)
-            // --------------------------------------------------------------
-            // Aquí es donde necesitarías enviar estos datos a tu servidor (backend).
-            // El backend los recibiría y los guardaría en la base de datos.
-            // Para fines de este ejemplo, simularemos una llamada a la API.
-
-            try {
-                // Simulación de una llamada a una API de backend
-                // En un entorno real, reemplazarías 'YOUR_BACKEND_API_ENDPOINT'
-                // con la URL de tu servidor (ej. 'http://localhost:3000/api/access')
-                const response = await fetch('YOUR_BACKEND_API_ENDPOINT/register-access', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password }),
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Acceso registrado con éxito:', data);
-                    alert('Acceso registrado con éxito!');
-                    accessModal.style.display = 'none'; // Cerrar modal después de éxito
-                    accessForm.reset(); // Limpiar el formulario
-                } else {
-                    const errorData = await response.json();
-                    console.error('Error al registrar acceso:', errorData.message);
-                    alert('Error al registrar acceso: ' + errorData.message);
-                }
-            } catch (error) {
-                console.error('Fallo la conexión con el servidor:', error);
-                alert('No se pudo conectar con el servidor para registrar el acceso.');
-            }
-            // --------------------------------------------------------------
+            // En un entorno real, aquí se haría la llamada a tu API de backend.
+            // Por ahora, solo simularemos la acción y cerraremos el modal.
+            alert('Usuario y Contraseña capturados. (En un entorno real, esto se enviaría a tu servidor)');
+            
+            // Limpiar el formulario y cerrar el modal
+            accessForm.reset();
+            accessModal.style.display = 'none';
         });
     }
     // --------------------------------------------------------------------
