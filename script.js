@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------------------
-    // INICIO DEL CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER (NUEVO)
+    // INICIO DEL CÓDIGO PARA EL REGISTRO DEL SERVICE WORKER
     // --------------------------------------------------------------------
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -19,8 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --------------------------------------------------------------------
-    // TU CÓDIGO EXISTENTE PARA EL SIDEBAR Y CAMBIO DE SECCIONES VA AQUÍ
-    // (Este código ya lo tienes y lo habíamos mejorado anteriormente)
+    // TU CÓDIGO EXISTENTE PARA EL SIDEBAR Y CAMBIO DE SECCIONES
     // --------------------------------------------------------------------
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleBtn');
