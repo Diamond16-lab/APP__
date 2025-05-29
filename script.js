@@ -61,6 +61,8 @@ const checkLogin = async (username, password) => {
     });
 
     const text = await res.text();
+    console.log('Respuesta del servidor:', text);
+    // Verifica si la respuesta es "OK"
     return text === 'OK';
   } catch (err) {
     console.error('Error al validar usuario:', err);
