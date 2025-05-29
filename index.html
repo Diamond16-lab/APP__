@@ -23,6 +23,7 @@
           <li><a href="#">Reportes</a></li>
         </ul>
       </li>
+      <li><a href="#">Usuarios</a></li>
     </ul>
   </aside>
 
@@ -40,20 +41,18 @@
     </div>
   </div>
 
-  <section id="formularioCarga" style="display: none;">
-    <h2>Formulario de carga</h2>
-    <form id="gasolinaForm">
-      <label>Fecha:</label>
-      <input type="date" name="fecha" required />
-      <label>Vehículo:</label>
-      <input type="text" name="vehiculo" required />
-      <label>Kilometraje:</label>
-      <input type="number" name="kilometraje" required />
-      <label>Litros cargados:</label>
-      <input type="number" name="litros" required />
-      <label>Precio por litro:</label>
-      <input type="number" step="0.01" name="precio" required />
-      <button type="submit">Enviar</button>
+  <section id="formularioOperador" style="display: none;">
+    <h2>Formulario del operador</h2>
+    <form id="operadorForm">
+      <label>Nombre del operador:</label>
+      <input type="text" name="nombre" required />
+      <label>Turno:</label>
+      <input type="text" name="turno" required />
+      <label>Unidad asignada:</label>
+      <input type="text" name="unidad" required />
+      <label>Observaciones:</label>
+      <textarea name="observaciones"></textarea>
+      <button type="submit">Guardar</button>
     </form>
   </section>
 </body>

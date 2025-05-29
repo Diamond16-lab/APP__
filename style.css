@@ -25,6 +25,10 @@ body {
   padding: 20px;
   box-sizing: border-box;
   color: white;
+  transition: width 0.3s ease;
+}
+.sidebar.collapsed {
+  width: 60px;
 }
 .toggle-btn {
   cursor: pointer;
@@ -46,6 +50,12 @@ body {
   list-style: none;
   padding-left: 20px;
   display: none;
+}
+.arrow-icon {
+  transition: transform 0.3s ease;
+}
+.submenu-toggle.open .arrow-icon {
+  transform: rotate(180deg);
 }
 .modal {
   display: none;
