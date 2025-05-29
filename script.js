@@ -17,12 +17,28 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 document.addEventListener('DOMContentLoaded', () => {
+  const toggleBtn = document.getElementById('toggleBtn');
+  const sidebar = document.getElementById('sidebar');
+  const submenuToggles = document.querySelectorAll('.submenu-toggle');
   const cargarBtn = document.getElementById('cargarGasolinaBtn');
   const loginModal = document.getElementById('loginModal');
   const closeModal = document.getElementById('closeModal');
   const loginForm = document.getElementById('loginForm');
   const formularioSection = document.getElementById('formularioCarga');
   const gasolinaForm = document.getElementById('gasolinaForm');
+
+  // Restaurar funcionalidad de toggle sidebar
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+  });
+
+  submenuToggles.forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      const submenu = toggle.nextElementSibling;
+      submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+    });
+  });
 
   cargarBtn.addEventListener('click', () => {
     loginModal.style.display = 'block';

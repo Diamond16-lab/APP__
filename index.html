@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PetroNexus</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <script type="module" src="script.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div class="hero">
@@ -19,9 +17,10 @@
     <div class="toggle-btn" id="toggleBtn"><i class="bi bi-list"></i></div>
     <ul class="menu">
       <li class="has-submenu">
-        <a href="#" class="submenu-toggle">Gasolina</a>
+        <a href="#" class="submenu-toggle">Gasolina <i class="bi bi-chevron-down arrow-icon"></i></a>
         <ul class="submenu">
           <li><a href="#" id="cargarGasolinaBtn">Cargar gasolina</a></li>
+          <li><a href="#">Reportes</a></li>
         </ul>
       </li>
     </ul>
