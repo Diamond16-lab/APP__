@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
   const toggleBtn = document.getElementById('toggleBtn');
   const sidebar = document.getElementById('sidebar');
