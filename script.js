@@ -27,11 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const formularioSection = document.getElementById('formularioCarga');
   const gasolinaForm = document.getElementById('gasolinaForm');
 
-  // Restaurar funcionalidad de toggle sidebar
-  toggleBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('collapsed');
-  });
+  // Toggle sidebar
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+    });
+  }
 
+  // Toggle submenus
   submenuToggles.forEach(toggle => {
     toggle.addEventListener('click', (e) => {
       e.preventDefault();
@@ -40,50 +43,62 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  cargarBtn.addEventListener('click', () => {
-    loginModal.style.display = 'block';
-  });
+  // Mostrar modal login
+  if (cargarBtn) {
+    cargarBtn.addEventListener('click', () => {
+      loginModal.style.display = 'block';
+    });
+  }
 
-  closeModal.addEventListener('click', () => {
-    loginModal.style.display = 'none';
-  });
-
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const pass = document.getElementById('password').value;
-
-    try {
-      await signInWithEmailAndPassword(auth, email, pass);
-      alert('Acceso concedido');
+  // Cerrar modal login
+  if (closeModal) {
+    closeModal.addEventListener('click', () => {
       loginModal.style.display = 'none';
-      formularioSection.style.display = 'block';
-    } catch (err) {
-      alert('Credenciales incorrectas');
-      console.error(err);
-    }
-  });
+    });
+  }
 
-  gasolinaForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  // Autenticación
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const pass = document.getElementById('password').value;
 
-    const formData = new FormData(gasolinaForm);
-    const data = {
-      fecha: formData.get("fecha"),
-      vehiculo: formData.get("vehiculo"),
-      kilometraje: formData.get("kilometraje"),
-      litros: formData.get("litros"),
-      precio: formData.get("precio"),
-      timestamp: new Date()
-    };
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        alert('Acceso concedido');
+        loginModal.style.display = 'none';
+        formularioSection.style.display = 'block';
+      } catch (err) {
+        alert('Credenciales incorrectas');
+        console.error(err);
+      }
+    });
+  }
 
-    try {
-      await addDoc(collection(db, "cargas"), data);
-      alert("Carga registrada correctamente");
-      gasolinaForm.reset();
-    } catch (err) {
-      console.error("Error al guardar en Firestore:", err);
-      alert("Hubo un error al guardar la carga");
-    }
-  });
+  // Guardar en Firestore
+  if (gasolinaForm) {
+    gasolinaForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(gasolinaForm);
+      const data = {
+        fecha: formData.get("fecha"),
+        vehiculo: formData.get("vehiculo"),
+        kilometraje: formData.get("kilometraje"),
+        litros: formData.get("litros"),
+        precio: formData.get("precio"),
+        timestamp: new Date()
+      };
+
+      try {
+        await addDoc(collection(db, "cargas"), data);
+        alert("Carga registrada correctamente");
+        gasolinaForm.reset();
+      } catch (err) {
+        console.error("Error al guardar en Firestore:", err);
+        alert("Hubo un error al guardar la carga");
+      }
+    });
+  }
 });
