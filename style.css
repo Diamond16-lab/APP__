@@ -2,59 +2,122 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f3f3f3;
+  background-color: #f4f4f4;
 }
-.hero {
-  background-color: #00264d;
+.layout {
+  display: flex;
+  height: 100vh;
+}
+.sidebar {
+  width: 260px;
+  background-color: #1e1e2f;
   color: white;
-  text-align: center;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
 }
-.form-header {
+.logo {
+  text-align: center;
+  padding: 1rem;
+}
+.logo img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.logo h2 {
+  margin-top: 0.5rem;
+}
+.menu {
+  list-style: none;
+  padding: 0;
+}
+.menu li {
+  border-top: 1px solid #333;
+}
+.menu a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 1rem;
+  transition: background 0.3s;
+}
+.menu a:hover {
+  background-color: #333;
+}
+.submenu {
+  display: none;
+  list-style: none;
+  padding-left: 1.5rem;
+  background-color: #2c2c3c;
+}
+.submenu li a {
+  padding: 0.5rem 1rem;
+  display: block;
+}
+.topbar {
   background-color: #c40000;
   color: white;
   padding: 1rem;
-  text-align: center;
-}
-form {
   display: flex;
-  flex-direction: column;
-  padding: 2rem;
-  max-width: 600px;
-  margin: auto;
+  align-items: center;
 }
-form label {
-  font-weight: bold;
-  margin-top: 1rem;
-}
-form input, form textarea, form select {
-  padding: 10px;
-  margin-top: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-form button {
-  margin-top: 2rem;
-  padding: 12px;
-  background-color: #c40000;
-  color: white;
+.menu-toggle {
+  background: none;
   border: none;
-  font-weight: bold;
-  border-radius: 5px;
+  color: white;
+  font-size: 1.5rem;
+  margin-right: 1rem;
   cursor: pointer;
 }
-form button:hover {
-  background-color: #900000;
+.page-title {
+  margin: 0;
 }
-.modal {
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+.centered {
+  flex-grow: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
-.modal-content {
-  background-color: #fff;
+.login-card {
+  background: #f8f4fb;
   padding: 2rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
-  border-radius: 10px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  width: 300px;
+}
+.login-card h2 {
+  margin-top: 0;
+}
+.login-card input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+.buttons button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.buttons button:first-child {
+  background-color: #ddd;
+}
+.buttons button:last-child {
+  background-color: #c40000;
+  color: white;
 }
