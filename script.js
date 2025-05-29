@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
   const toggleBtn = document.getElementById('toggleBtn');
   const sidebar = document.getElementById('sidebar');
@@ -54,12 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const rows = result.data;
 
       for (let i = 0; i < rows.length; i++) {
-      const usuario = rows[i]["Usuario"].trim();      // nota el espacio después de "Usuario "
-      const contrasena = rows[i]["Contraseña"].trim();
+        const usuario = rows[i]["Usuario "].trim();
+        const contrasena = rows[i]["Contraseña"].trim();
 
-      if (usuario === username && contrasena === password) {
-        return true;
-      
+        if (usuario === username && contrasena === password) {
+          return true;
         }
       }
 

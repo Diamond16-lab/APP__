@@ -3,7 +3,6 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
 }
-
 .hero {
   background-image: url('https://images.unsplash.com/photo-1581092334651-8455c9b4eb87');
   background-size: cover;
@@ -16,7 +15,6 @@ body {
   font-size: 48px;
   text-shadow: 2px 2px 4px #000;
 }
-
 .sidebar {
   position: fixed;
   top: 0;
@@ -28,33 +26,27 @@ body {
   box-sizing: border-box;
   color: white;
 }
-
 .toggle-btn {
   cursor: pointer;
   font-size: 24px;
   margin-bottom: 20px;
 }
-
 .menu {
   list-style: none;
   padding: 0;
 }
-
 .menu li {
   margin: 10px 0;
 }
-
 .menu a {
   color: white;
   text-decoration: none;
 }
-
 .submenu {
   list-style: none;
   padding-left: 20px;
   display: none;
 }
-
 .modal {
   display: none;
   position: fixed;
@@ -66,7 +58,6 @@ body {
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.5);
 }
-
 .modal-content {
   background-color: #fefefe;
   margin: 15% auto;
@@ -74,7 +65,6 @@ body {
   border: 1px solid #888;
   width: 300px;
 }
-
 .close-button {
   float: right;
   font-size: 28px;
