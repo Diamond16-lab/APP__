@@ -2,91 +2,70 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard Petronexus</title>
-  
-  <link rel="manifest" href="manifest.json" />
-
-  <link rel="stylesheet" href="style.css" /> 
-  
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  
-  <script defer src="script.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PetroNexus</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 </head>
 <body>
-  <div class="container">
-    <aside class="sidebar" id="sidebar">
-      <div class="toggle-btn" id="toggleBtn">
-        <i class="bi bi-list"></i>
-      </div>
-      <h2 class="brand">Petronexus</h2>
-      <ul class="menu">
-        <li class="has-submenu">
-          <a href="#carga" class="submenu-toggle">
-            <i class="bi bi-fuel-pump"></i>
-            <span>Carga gasolina</span>
-            <i class="bi bi-chevron-down arrow-icon"></i>
-          </a>
-          <ul class="submenu">
-            <li><a href="#subir"><i class="bi bi-upload"></i><span>Subir carga</span></a></li>
-            <li><a href="#reportes"><i class="bi bi-bar-chart-line"></i><span>Reportes</span></a></li>
-          </ul>
-        </li>
-        <li><a href="#usuarios"><i class="bi bi-people"></i><span>Usuarios</span></a></li>
-        <li><a href="#admin-logs"><i class="bi bi-file-earmark-lock"></i><span>Logs de Acceso (Admin)</span></a></li>
-      </ul>
-    </aside>
-
-    <main class="main-content">
-      <section id="carga">
-          <h1>Carga de gasolina</h1>
-          <p>Este es el formulario para cargar datos de gasolina después de iniciar sesión.</p>
-          <form id="gasolinaForm">
-              <div class="form-group">
-                  <label for="fechaCarga">Fecha de Carga:</label>
-                  <input type="date" id="fechaCarga" name="fechaCarga" required>
-              </div>
-              <div class="form-group">
-                  <label for="litros">Litros:</label>
-                  <input type="number" id="litros" name="litros" step="0.01" required>
-              </div>
-              <div class="form-group">
-                  <label for="costo">Costo Total:</label>
-                  <input type="number" id="costo" name="costo" step="0.01" required>
-              </div>
-              <button type="submit">Guardar Carga</button>
-          </form>
-      </section>
-      <section id="subir"><h1>Subir carga</h1></section>
-      <section id="reportes"><h1>Reportes</h1></section>
-      <section id="usuarios"><h1>Gestión de Usuarios</h1></section>
-      <section id="admin-logs">
-          <h1>Logs de Acceso</h1>
-          <button id="refreshLogsBtn">Actualizar Logs</button>
-          <div id="logsContainer" style="margin-top: 20px;">
-              <p>Cargando logs...</p>
-          </div>
-      </section>
-    </main>
+  <!-- Imagen de fondo y título -->
+  <div class="hero">
+    <h1>PetroNexus</h1>
   </div>
 
-    <div id="accessModal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>Acceso Requerido</h2>
-            <form id="accessForm">
-                <div class="form-group">
-                    <label for="username">Usuario:</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Contraseña:</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit">Acceder</button>
-            </form>
-        </div>
-    </div>
+  <!-- Sidebar con menú -->
+  <aside class="sidebar" id="sidebar">
+    <div class="toggle-btn" id="toggleBtn"><i class="bi bi-list"></i></div>
+    <ul class="menu">
+      <li class="has-submenu">
+        <a href="#" class="submenu-toggle">Gasolina <i class="bi bi-chevron-down arrow-icon"></i></a>
+        <ul class="submenu">
+          <li><a href="#" id="cargarGasolinaBtn">Cargar gasolina</a></li>
+          <li><a href="#">Reportes</a></li>
+        </ul>
+      </li>
+      <li><a href="#">Usuarios</a></li>
+    </ul>
+  </aside>
 
+  <!-- Modal de login -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" id="closeModal">&times;</span>
+      <h2>Iniciar sesión</h2>
+      <form id="loginForm">
+        <label for="username">Usuario:</label>
+        <input type="text" id="username" required />
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" required />
+        <button type="submit">Ingresar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Formulario de carga de gasolina -->
+  <section id="formularioCarga" style="display: none;">
+    <h2>Formulario de carga</h2>
+    <form id="gasolinaForm">
+      <label>Fecha:</label>
+      <input type="date" name="fecha" required />
+
+      <label>Vehículo:</label>
+      <input type="text" name="vehiculo" required />
+
+      <label>Kilometraje:</label>
+      <input type="number" name="kilometraje" required />
+
+      <label>Litros cargados:</label>
+      <input type="number" name="litros" required />
+
+      <label>Precio por litro:</label>
+      <input type="number" step="0.01" name="precio" required />
+
+      <button type="submit">Enviar</button>
+    </form>
+  </section>
+
+  <script src="script.js"></script>
 </body>
 </html>

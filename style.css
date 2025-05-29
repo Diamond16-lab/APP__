@@ -1,327 +1,82 @@
-/* style.css (Versión corregida y completa) */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f4f4f4;
-  overflow: hidden; /* Evita el scroll global innecesario */
+  margin: 0;
+  font-family: Arial, sans-serif;
 }
 
-.container {
-  display: flex;
+.hero {
+  background-image: url('https://images.unsplash.com/photo-1581092334651-8455c9b4eb87');
+  background-size: cover;
+  background-position: center;
   height: 100vh;
-}
-
-.sidebar {
-  width: 240px;
-  background-color: #1e1e2f;
   color: white;
-  padding: 20px 10px;
-  transition: width 0.3s ease-in-out; /* Mejora la transición para suavidad */
-  position: relative;
-  flex-shrink: 0; /* Evita que el sidebar se encoja cuando no debe */
-}
-
-.sidebar.collapsed {
-  width: 70px;
-}
-
-.sidebar .toggle-btn {
-  position: absolute;
-  top: 20px;
-  right: -25px; /* Mantiene la posición del botón */
-  background-color: #1e1e2f;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  font-size: 48px;
+  text-shadow: 2px 2px 4px #000;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 100%;
+  background-color: #1e1e2f;
+  padding: 20px;
+  box-sizing: border-box;
   color: white;
 }
 
-.brand {
-  text-align: center;
-  font-size: 22px;
-  margin-bottom: 30px;
-  white-space: nowrap; /* Evita que el texto se rompa */
-  overflow: hidden; /* Oculta el desbordamiento si el texto es muy largo */
-  text-overflow: ellipsis; /* Añade puntos suspensivos si el texto se recorta */
-}
-
-.sidebar.collapsed .brand {
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+.toggle-btn {
+  cursor: pointer;
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
 .menu {
   list-style: none;
+  padding: 0;
 }
 
 .menu li {
-  margin-bottom: 10px;
+  margin: 10px 0;
 }
 
 .menu a {
   color: white;
   text-decoration: none;
-  display: flex;
-  align-items: center;
-  padding: 12px 10px;
-  border-radius: 8px;
-  transition: background-color 0.3s ease-in-out, padding 0.3s ease-in-out;
-  white-space: nowrap; /* Evita que el texto del enlace se rompa */
-}
-
-.menu a:hover,
-.menu a.active {
-  background-color: #333;
-}
-
-.menu a i {
-  font-size: 20px;
-  margin-right: 15px;
-  transition: margin-right 0.3s ease-in-out;
-}
-
-.sidebar.collapsed .menu a {
-  justify-content: center; /* Centra los iconos cuando el sidebar está colapsado */
-  padding: 12px 0; /* Ajusta el padding para solo iconos */
-}
-
-.sidebar.collapsed .menu a i {
-  margin-right: 0; /* Elimina el margen del icono cuando el sidebar está colapsado */
-}
-
-.sidebar.collapsed .menu a span {
-  display: none; /* Oculta el texto cuando el sidebar está colapsado */
-}
-
-/* Estilos para el submenú */
-.has-submenu .submenu-toggle {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 .submenu {
-    list-style: none;
-    padding-left: 0;
-    max-height: 0; /* Oculto por defecto */
-    overflow: hidden;
-    transition: max-height 0.3s ease-out; /* Transición suave para el desplegado */
+  list-style: none;
+  padding-left: 20px;
+  display: none;
 }
 
-.submenu.active {
-    max-height: 200px; /* Altura máxima para mostrar el submenú. Ajusta si tienes muchos elementos */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
-.submenu li a {
-    padding: 10px 10px 10px 40px; /* Indentación para elementos del submenú */
-    font-size: 14px;
-    background-color: #2a2a3e; /* Un tono más oscuro para el submenú */
-    color: #e0e0e0;
-}
-
-.submenu li a:hover,
-.submenu li a.active {
-    background-color: #3a3a50; /* Color al pasar el ratón para el submenú */
-}
-
-.submenu li a i {
-    font-size: 16px; /* Ajusta el tamaño de los iconos del submenú */
-    margin-right: 8px;
-}
-
-/* Estilos para el ícono de flecha */
-.arrow-icon {
-  margin-left: auto; /* Empuja la flecha hacia la derecha */
-  transition: transform 0.3s ease-in-out; /* Transición suave para la rotación */
-}
-
-/* Rotar la flecha cuando el submenú está activo */
-.submenu-toggle.active .arrow-icon {
-  transform: rotate(180deg); /* Rota la flecha 180 grados */
-}
-
-/* Ajuste para los spans cuando el sidebar está colapsado y hay submenús */
-.sidebar.collapsed .has-submenu .submenu-toggle span {
-    opacity: 0;
-    width: 0;
-    padding: 0;
-    margin: 0;
-}
-.sidebar.collapsed .has-submenu .arrow-icon {
-    margin-left: 0; /* Restablece el margen para que el icono se quede cerca del borde */
-}
-
-/* Contenido principal */
-.main-content {
-  flex-grow: 1;
-  padding: 20px;
-  background-color: #fff;
-  overflow-y: auto; /* Permite el scroll solo en el contenido principal */
-  transition: margin-left 0.3s ease-in-out; /* Suaviza el movimiento al colapsar/expandir */
-}
-
-/* Ajuste para que el main-content se mueva para llenar el espacio */
-.sidebar + .main-content { /* Selector adyacente, útil si el main-content es hermano del sidebar */
-    margin-left: 0; /* Reinicia si había un margen previo */
-}
-
-section {
-  margin-bottom: 50px;
-  padding: 20px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  display: none; /* Por defecto, todas las secciones están ocultas */
-}
-
-section:first-of-type {
-  display: block; /* Muestra la primera sección por defecto (gestionado también por JS) */
-}
-
-
-/* Media queries para responsividad */
-@media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    z-index: 999;
-    height: 100%;
-    left: -240px; /* Oculta el sidebar por completo por defecto en móviles */
-    width: 240px; /* Asegura el ancho completo para cuando se muestre */
-  }
-
-  .sidebar.collapsed {
-    left: 0; /* Muestra el sidebar cuando está "colapsado" (en realidad, mostrado) */
-    width: 240px; /* Asegura el ancho para que se vea completo */
-  }
-
-  .sidebar .toggle-btn {
-    left: initial; /* Resetea la posición izquierda */
-    right: 20px; /* Ajusta la posición del botón en móviles */
-    top: 20px; /* Asegura que no se mueva verticalmente */
-    background-color: #1e1e2f; /* Fondo del botón */
-    border-radius: 50%;
-    z-index: 1000; /* Asegura que esté encima de todo */
-  }
-
-  .main-content {
-    margin-left: 0; /* No hay margen fijo en móviles */
-    width: 100%; /* El contenido ocupa todo el ancho disponible */
-  }
-}
-
-/* ------------------------------------------- */
-/* Estilos del Modal de Acceso */
-/* ------------------------------------------- */
-
-/* REGLA CRÍTICA PARA OCULTAR EL MODAL AL INICIO */
-#accessModal {
-    display: none; /* Asegura que el modal esté oculto por defecto */
-    opacity: 0; /* Añadir opacidad 0 para una transición suave si lo usas con JavaScript */
-    transition: opacity 0.3s ease-in-out; /* Opcional: para futuras animaciones */
-}
-
-/* Overlay del modal */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Asegura que esté por encima de todo */
-    /* Cuando JavaScript lo muestre, cambiará display a 'flex' y añadirá una clase 'show' para opacity: 1; */
-}
-
-/* Contenido del modal */
 .modal-content {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    width: 90%;
-    max-width: 400px;
-    position: relative;
-    animation: fadeIn 0.3s ease-out; /* Animación de aparición */
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 300px;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Botón de cerrar */
 .close-button {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #333;
-}
-
-.close-button:hover {
-    color: #ff0000;
-}
-
-.modal-content h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    color: #333;
-}
-
-.modal-content .form-group {
-    margin-bottom: 20px;
-}
-
-.modal-content label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #555;
-}
-
-.modal-content input[type="text"],
-.modal-content input[type="password"] {
-    width: calc(100% - 20px); /* Ajusta el ancho para el padding */
-    padding: 12px 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
-}
-
-.modal-content input[type="text"]:focus,
-.modal-content input[type="password"]:focus {
-    border-color: #1e1e2f; /* Color de tu sidebar */
-    outline: none;
-    box-shadow: 0 0 5px rgba(30, 30, 47, 0.3);
-}
-
-.modal-content button[type="submit"] {
-    width: 100%;
-    padding: 12px;
-    background-color: #1e1e2f; /* Color de tu sidebar */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 18px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.modal-content button[type="submit"]:hover {
-    background-color: #2a2a3e; /* Un tono un poco más claro al pasar el ratón */
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
 }
