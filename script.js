@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Llama al script y verifica credenciales contra Google Sheets
 const checkLogin = async (username, password) => {
   try {
-    const res = await fetch('https://script.google.com/macros/s/AKfycbxTmmwPIS0HTLnh0iyyz7XoDTYN6fUK_s_eX-6H4eoblAnJryMCG8GPo53Dw2fqn801/exec', {
+    const res = await fetch('https://script.google.com/macros/s/AKfycbzHn9WFpbnDFOS-bWEyPJQmaTVpa_sRnk1iK5-1lz2CGFJW-anw4HZZbliRSFl7hSTB/exec', {
       method: 'POST',
       body: JSON.stringify({ tipo: 'login', username, password }),
       headers: {
@@ -70,7 +70,7 @@ const checkLogin = async (username, password) => {
 
 
   // CONEXIÓN a Google Sheets
-  const endpoint ='https://script.google.com/macros/s/AKfycbxTmmwPIS0HTLnh0iyyz7XoDTYN6fUK_s_eX-6H4eoblAnJryMCG8GPo53Dw2fqn801/exec'; // Reemplaza con tu endpoint de Google Sheets
+  const endpoint ='https://script.google.com/macros/s/AKfycbzHn9WFpbnDFOS-bWEyPJQmaTVpa_sRnk1iK5-1lz2CGFJW-anw4HZZbliRSFl7hSTB/exec'; // Reemplaza con tu endpoint de Google Sheets
   gasolinaForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
