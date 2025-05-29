@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginModal = document.getElementById('loginModal');
   const closeModal = document.getElementById('closeModal');
   const loginForm = document.getElementById('loginForm');
-  const formularioSection = document.getElementById('formularioCarga');
+  const formularioSection = document.getElementById('formularioOperador');
   const gasolinaForm = document.getElementById('gasolinaForm');
 
   // Toggle sidebar
