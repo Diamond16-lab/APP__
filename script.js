@@ -53,10 +53,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await res.json();
       const rows = result.data;
 
-      for (let i = 1; i < rows.length; i++) {
-        const [usuario, contrasena] = rows[i];
-        if (usuario === username && contrasena === password) {
-          return true;
+      for (let i = 0; i < rows.length; i++) {
+      const usuario = rows[i]["Usuario"].trim();      // nota el espacio después de "Usuario "
+      const contrasena = rows[i]["Contraseña"].trim();
+
+      if (usuario === username && contrasena === password) {
+        return true;
+      
         }
       }
 
