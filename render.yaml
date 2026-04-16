@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: reporte-tecnico
+    runtime: node
+    plan: free
+    branch: reporte-tecnico-app
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: SEED_USERNAME
+        value: admin
+      - key: SEED_PASSWORD
+        sync: false
+      - key: SEED_DISPLAY_NAME
+        value: Ing. Demo Tecnico
+      - key: SEED_EMPLOYEE_NUMBER
+        value: IDS-001

@@ -61,6 +61,20 @@ Si la coleccion `users` esta vacia, el servidor crea automaticamente:
 - `npm run lint`: revision ESLint
 - `npm run start`: API en modo normal
 
+## Deploy permanente (Render)
+
+Despliegue en un clic con el `render.yaml` incluido:
+
+- [Deploy to Render](https://render.com/deploy?repo=https://github.com/Diamond16-lab/APP__/tree/reporte-tecnico-app)
+
+Al crear el servicio, solo completa estos secretos en Render:
+
+- `MONGODB_URI`
+- `JWT_SECRET`
+- `SEED_PASSWORD`
+
+Cuando termine el deploy, Render entrega una URL publica `https://...onrender.com` que ya no depende de tu maquina.
+
 ## Flujo del reporte
 
 1. El tecnico inicia sesion.
