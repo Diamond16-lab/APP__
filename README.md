@@ -1,25 +1,30 @@
-# Reporte Tecnico Xerox - IDS Service
+# Reporte Tecnico Xerox | IDS Service
 
-Repositorio de presentacion del proyecto **Reporte Tecnico**.
+Aplicacion web para captura, trazabilidad y generacion de reportes tecnicos con formato Xerox.
 
-La version activa y mantenida del sistema se encuentra en la rama:
+> Este repositorio usa `main` como portada de presentacion.
+> El desarrollo activo del sistema vive en la rama `reporte-tecnico-app`.
 
-- [`reporte-tecnico-app`](https://github.com/Diamond16-lab/APP__/tree/reporte-tecnico-app)
+## Enlace Principal Del Proyecto
 
-## Que Incluye El Proyecto
+[Ver rama activa `reporte-tecnico-app`](https://github.com/Diamond16-lab/APP__/tree/reporte-tecnico-app)
 
-- Login tecnico con sesion segura.
-- Captura guiada de reportes en multiples pasos.
-- Guardado real en MongoDB.
-- Generacion de PDF con formato Xerox.
-- Historial con filtros y comparacion por serie.
-- Firma dibujada de cliente y tecnico.
+## Lo Que Ya Hace La App
 
-## Acceso Rapido
+- Autenticacion local con sesion segura.
+- Flujo guiado de captura de reporte por pasos.
+- Guardado real en MongoDB como fuente de verdad.
+- Generacion de PDF respetando el formato tecnico.
+- Historial con filtros por cliente, serie, fecha y tecnico.
+- Comparacion automatica contra reporte previo por serie.
+- Firma dibujada de cliente e ingeniero.
 
-- Rama principal del proyecto: [`reporte-tecnico-app`](https://github.com/Diamond16-lab/APP__/tree/reporte-tecnico-app)
-- Deploy Render (cuando este activo): revisar el README de la rama `reporte-tecnico-app`.
+## Visualizacion Recomendada En GitHub
 
----
+1. Abre el selector de ramas.
+2. Cambia de `main` a `reporte-tecnico-app`.
+3. Revisa README, codigo y configuracion de deploy en esa rama.
 
-Si estas revisando este repositorio desde `main`, cambia a la rama `reporte-tecnico-app` para ver el codigo completo de la aplicacion.
+## Deploy
+
+El despliegue productivo se gestiona con Render y variables de entorno (`MONGODB_URI`, `JWT_SECRET`, `SEED_PASSWORD`) definidas por ambiente.
