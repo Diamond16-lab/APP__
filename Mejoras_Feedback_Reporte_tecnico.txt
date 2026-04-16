@@ -1,0 +1,29 @@
+Cambios en el documento
+Medidores tiene que ser automatico el total o hay veces en las que solo tiene blanco y negro y se va al total
+
+en el campo de sistema -  son con listas desplegables
+en el susbistema igual
+
+fte - Lista desplegable 06 o 02, otro, y se agrega otro campo para escribir. 
+campo nomina RT numero de empleado
+
+campo de dibujo en la firma para que el cliente y el técnico firme
+
+
+
+
+
+
+- Interfaces pendientes
+Interfaz de autenticación
+logo de la empresa en la interfaz
+inicio en la parte de flash del logo de la empresa
+Interfaz conectada con pagina cdsur
+
+
+- Comparación de reportes entre uno y otro
+resta de las impresiones con la actual 
+que partes se han utilizado en el equipo
+
+- Formas de buscar
+Consulta por series, nombre del cliente y razón social, fecha de los reportes. Búsqueda por nombre del técnico.

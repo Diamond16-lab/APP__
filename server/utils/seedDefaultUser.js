@@ -1,0 +1,20 @@
+import bcrypt from 'bcryptjs';
+import { env } from '../config/env.js';
+import { User } from '../models/User.js';
+
+export async function seedDefaultUser() {
+  const usersCount = await User.countDocuments();
+  if (usersCount > 0) return;
+
+  const passwordHash = await bcrypt.hash(env.seedPassword, 10);
+
+  await User.create({
+    username: env.seedUsername.toLowerCase(),
+    passwordHash,
+    displayName: env.seedDisplayName,
+    employeeNumber: env.seedEmployeeNumber,
+    isActive: true,
+  });
+
+  console.log(`Default user created: ${env.seedUsername}`);
+}
