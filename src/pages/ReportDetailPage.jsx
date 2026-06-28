@@ -90,7 +90,14 @@ export function ReportDetailPage() {
     <section className="page-stack">
       {location.state?.justCreated && (
         <div className="alert success-alert">
-          El reporte se guardo en MongoDB y el PDF se genero con esos datos persistidos.
+          {location.state?.pdfWarning
+            ? 'El reporte se guardo correctamente en MongoDB.'
+            : 'El reporte se guardo en MongoDB y el PDF se genero con esos datos persistidos.'}
+        </div>
+      )}
+      {location.state?.pdfWarning && (
+        <div className="alert soft-alert">
+          {location.state.pdfWarning}
         </div>
       )}
 

@@ -28,6 +28,11 @@ async function request(path, options = {}) {
     const error = new Error(data.message || 'Request failed.');
     error.status = response.status;
     error.payload = data;
+
+    if (response.status === 401 && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('rt:auth-expired'));
+    }
+
     throw error;
   }
 

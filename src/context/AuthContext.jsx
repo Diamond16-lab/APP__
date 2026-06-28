@@ -30,6 +30,18 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      setUser(null);
+      setBooting(false);
+    };
+
+    window.addEventListener('rt:auth-expired', handleAuthExpired);
+    return () => {
+      window.removeEventListener('rt:auth-expired', handleAuthExpired);
+    };
+  }, []);
+
   const value = useMemo(() => ({
     user,
     booting,

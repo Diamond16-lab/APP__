@@ -76,7 +76,110 @@ const STEP_HELPERS = [
   'Dibuja ambas firmas para habilitar el guardado final y generar el PDF.',
 ];
 
+function generateDemoSignature(text) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 640;
+  canvas.height = 190;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, 640, 190);
+  ctx.fillStyle = '#0f172a';
+  ctx.font = 'italic 52px Georgia, "Times New Roman", serif';
+  const name = String(text || 'Firma').trim();
+  ctx.fillText(name, 32, 115);
+  const textWidth = Math.min(ctx.measureText(name).width + 24, 580);
+  ctx.strokeStyle = '#0f172a';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(32, 135);
+  ctx.lineTo(32 + textWidth, 135);
+  ctx.stroke();
+  return canvas.toDataURL('image/png');
+}
+
 const SMART_FILL_MIN_LENGTH = 3;
+const DRAFT_STORAGE_KEY = 'rt_report_form_draft_v1';
+
+function getDraftStorageKey(user) {
+  const identity = user?.id || user?.username || 'anon';
+  return `${DRAFT_STORAGE_KEY}:${identity}`;
+}
+
+function mergeDateParts(base, incoming) {
+  return { ...base, ...(incoming || {}) };
+}
+
+function mergeDraftWithTemplate(base, draft) {
+  if (!draft || typeof draft !== 'object') return base;
+
+  return {
+    ...base,
+    ...draft,
+    received: mergeDateParts(base.received, draft.received),
+    documented: mergeDateParts(base.documented, draft.documented),
+    activities: {
+      ...base.activities,
+      ...(draft.activities || {}),
+      viaje: mergeDateParts(base.activities.viaje, draft.activities?.viaje),
+      sr1: mergeDateParts(base.activities.sr1, draft.activities?.sr1),
+      sr2: mergeDateParts(base.activities.sr2, draft.activities?.sr2),
+      sr3: mergeDateParts(base.activities.sr3, draft.activities?.sr3),
+    },
+    client: { ...base.client, ...(draft.client || {}) },
+    equipment: { ...base.equipment, ...(draft.equipment || {}) },
+    meters: { ...base.meters, ...(draft.meters || {}) },
+    technical: { ...base.technical, ...(draft.technical || {}) },
+    parts: Array.isArray(draft.parts) && draft.parts.length > 0
+      ? draft.parts.map((part) => ({
+          ...base.parts[0],
+          ...(part || {}),
+        }))
+      : base.parts,
+    checklist: {
+      ...base.checklist,
+      ...(draft.checklist || {}),
+      bandejas_rotas: { ...base.checklist.bandejas_rotas, ...(draft.checklist?.bandejas_rotas || {}) },
+      contacto_electrico: { ...base.checklist.contacto_electrico, ...(draft.checklist?.contacto_electrico || {}) },
+      cableado_red: { ...base.checklist.cableado_red, ...(draft.checklist?.cableado_red || {}) },
+      problema_operacion: { ...base.checklist.problema_operacion, ...(draft.checklist?.problema_operacion || {}) },
+      operador_capacitado: { ...base.checklist.operador_capacitado, ...(draft.checklist?.operador_capacitado || {}) },
+      falta_materiales: { ...base.checklist.falta_materiales, ...(draft.checklist?.falta_materiales || {}) },
+    },
+    observations: { ...base.observations, ...(draft.observations || {}) },
+    signatures: { ...base.signatures, ...(draft.signatures || {}) },
+  };
+}
+
+function readDraftFromStorage(user) {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const raw = window.localStorage.getItem(getDraftStorageKey(user));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveDraftToStorage(form, user) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(getDraftStorageKey(user), JSON.stringify(form));
+  } catch {
+    // Ignore storage write errors.
+  }
+}
+
+function clearDraftFromStorage(user) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.removeItem(getDraftStorageKey(user));
+  } catch {
+    // Ignore storage clear errors.
+  }
+}
 
 function isBlank(value) {
   return !String(value ?? '').trim();
@@ -153,7 +256,11 @@ export function ReportFormPage() {
   const [step, setStep] = useState(1);
   const [catalogs, setCatalogs] = useState({ systems: [], subsystems: [], fteOptions: [] });
   const [loadingCatalogs, setLoadingCatalogs] = useState(true);
-  const [form, setForm] = useState(() => createInitialReportForm(user));
+  const [form, setForm] = useState(() => {
+    const base = createInitialReportForm(user);
+    const draft = readDraftFromStorage(user);
+    return syncFormWithUser(mergeDraftWithTemplate(base, draft), user);
+  });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [showPreview, setShowPreview] = useState(false);
@@ -163,12 +270,30 @@ export function ReportFormPage() {
   const lastSmartFillKeyRef = useRef('');
 
   useEffect(() => {
+    const base = createInitialReportForm(user);
+    const draft = readDraftFromStorage(user);
+
+    if (draft) {
+      setForm(syncFormWithUser(mergeDraftWithTemplate(base, draft), user));
+      return;
+    }
+
     setForm((current) => syncFormWithUser(current, user));
   }, [user]);
 
   useEffect(() => {
     formRef.current = form;
   }, [form]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      saveDraftToStorage(form, user);
+    }, 220);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [form, user]);
 
   useEffect(() => {
     sectionTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -296,7 +421,15 @@ export function ReportFormPage() {
   };
 
   const fillDemo = () => {
-    setForm(buildDemoForm(user));
+    const base = buildDemoForm(user);
+    setForm({
+      ...base,
+      signatures: {
+        ...base.signatures,
+        clientDataUrl: generateDemoSignature(base.signatures.clientName),
+        engineerDataUrl: generateDemoSignature(base.signatures.engineerName),
+      },
+    });
     setError('');
     setStep(1);
   };
@@ -329,11 +462,20 @@ export function ReportFormPage() {
     try {
       const payload = buildReportPayload(form);
       const savedReport = await createReport(payload);
-      const { generarPDF } = await import('../generarPDF');
-      await generarPDF(buildPdfPayloadFromReport(savedReport));
+      clearDraftFromStorage(user);
+
+      let pdfWarning = '';
+      try {
+        const { generarPDF } = await import('../generarPDF');
+        await generarPDF(buildPdfPayloadFromReport(savedReport));
+      } catch (pdfError) {
+        console.error('PDF generation failed after saving report', pdfError);
+        pdfWarning = 'El reporte se guardo correctamente, pero no se pudo generar el PDF en este intento.';
+      }
+
       navigate(`/reportes/${savedReport.id}`, {
         replace: true,
-        state: { justCreated: true },
+        state: { justCreated: true, pdfWarning },
       });
     } catch (submissionError) {
       const backendErrors = submissionError?.payload?.errors;

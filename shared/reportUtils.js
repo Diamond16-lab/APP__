@@ -26,10 +26,12 @@ export function getNowParts(date = new Date()) {
 }
 
 export function computeMeterTotal(bn, color) {
-  const bnValue = Number(cleanNumericString(bn));
-  const colorValue = Number(cleanNumericString(color));
-  const hasBn = Number.isFinite(bnValue);
-  const hasColor = Number.isFinite(colorValue);
+  const cleanBn = cleanNumericString(bn);
+  const cleanColor = cleanNumericString(color);
+  const bnValue = Number(cleanBn);
+  const colorValue = Number(cleanColor);
+  const hasBn = cleanBn !== '' && Number.isFinite(bnValue);
+  const hasColor = cleanColor !== '' && Number.isFinite(colorValue);
 
   if (!hasBn && !hasColor) return '';
   if (hasBn && !hasColor) return String(bnValue);

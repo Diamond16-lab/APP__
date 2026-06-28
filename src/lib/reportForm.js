@@ -152,7 +152,7 @@ export function buildDemoForm(user) {
   return {
     ...form,
     taskNumber: 'T-2026-00847',
-    reportTechnicalNo: '',
+    reportTechnicalNo: `RT-${current.anio}${String(Number(current.mes)).padStart(2, '0')}${String(Number(current.dia)).padStart(2, '0')}-DEMO`,
     employeeNumber: user?.employeeNumber || 'IDS-072',
     received: { ...current, hora: '09:30' },
     activities: {
