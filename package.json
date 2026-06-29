@@ -14,7 +14,10 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "predeploy": "npm test",
+    "deploy:staging": "git push origin main:staging",
+    "deploy:production": "git push origin main:reporte-tecnico-app"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
