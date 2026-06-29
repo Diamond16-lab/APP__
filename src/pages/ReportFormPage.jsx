@@ -460,8 +460,23 @@ export function ReportFormPage() {
     setError('');
 
     try {
-      const payload = buildReportPayload(form);
-      const savedReport = await createReport(payload);
+      const basePayload = buildReportPayload(form);
+      let savedReport;
+
+      // On 409 (duplicate folio), append -2 / -3 / … and retry automatically.
+      // Handles demo repeated saves and accidental real-report duplicates.
+      for (let attempt = 0; attempt <= 5; attempt++) {
+        const reportTechnicalNo = attempt === 0
+          ? basePayload.reportTechnicalNo
+          : `${basePayload.reportTechnicalNo}-${attempt + 1}`;
+        try {
+          savedReport = await createReport({ ...basePayload, reportTechnicalNo });
+          break;
+        } catch (saveError) {
+          if (saveError.status !== 409 || attempt === 5) throw saveError;
+        }
+      }
+
       clearDraftFromStorage(user);
 
       let pdfWarning = '';

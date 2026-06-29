@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { BrandMark } from './BrandMark';
 
@@ -35,7 +35,9 @@ export function AppShell() {
     <div className="shell">
       <header className="shell-header">
         <div className="shell-bar">
-          <BrandMark compact />
+          <Link to="/reportes/nuevo" className="brand-home-link">
+            <BrandMark compact />
+          </Link>
 
           <nav className="shell-nav">
             <NavLink to="/reportes/nuevo" className={({ isActive }) => `shell-link${isActive ? ' shell-link-active' : ''}`}>

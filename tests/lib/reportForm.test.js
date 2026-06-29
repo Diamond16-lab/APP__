@@ -256,7 +256,7 @@ describe('buildDemoForm', () => {
   it('fills reportTechnicalNo (not empty after fix)', () => {
     const form = buildDemoForm(MOCK_USER);
     expect(form.reportTechnicalNo).toBeTruthy();
-    expect(form.reportTechnicalNo).toMatch(/^RT-\d{8}-DEMO$/);
+    expect(form.reportTechnicalNo).toMatch(/^RT-\d{8}-DEMO-\d{6}$/);
   });
 
   it('fills all step-1 required fields', () => {

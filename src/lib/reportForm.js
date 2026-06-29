@@ -148,11 +148,18 @@ export function buildReportPayload(form) {
 export function buildDemoForm(user) {
   const form = createInitialReportForm(user);
   const current = getNowParts();
+  // Include HHmmss so each "Rellenar demo" click produces a unique folio
+  // that never collides with previous demo saves in MongoDB.
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mi = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  const ymd = `${current.anio}${String(Number(current.mes)).padStart(2, '0')}${String(Number(current.dia)).padStart(2, '0')}`;
 
   return {
     ...form,
     taskNumber: 'T-2026-00847',
-    reportTechnicalNo: `RT-${current.anio}${String(Number(current.mes)).padStart(2, '0')}${String(Number(current.dia)).padStart(2, '0')}-DEMO`,
+    reportTechnicalNo: `RT-${ymd}-DEMO-${hh}${mi}${ss}`,
     employeeNumber: user?.employeeNumber || 'IDS-072',
     received: { ...current, hora: '09:30' },
     activities: {

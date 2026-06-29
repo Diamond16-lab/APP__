@@ -127,15 +127,15 @@ const CHECKLIST = {
 const OBSERVATIONS = {
   left: [63.0, 328.9],
   right: [328.9, 549.0],
-  box: [645.2, 681.6],
+  box: [645.2, 673.0],  // shortened bottom so signatures start below observations
 };
 
 const SIGNATURES = {
   lineY: 713.9,
   left: [70.0, 250.0],
   right: [382.0, 547.0],
-  top: 660.0,
-  bottom: 699.0,
+  top: 675.0,   // was 660 — now clearly below observations (673), no overlap
+  bottom: 705.0, // 30pt signature band, ends before name text and line
 };
 
 async function loadTemplateDataUrl() {
@@ -824,16 +824,23 @@ function drawObservations(doc, form) {
     minSize: 4.8,
   });
 
-  const signatureWidthLeft = SIGNATURES.left[1] - SIGNATURES.left[0] - 24;
-  const signatureWidthRight = SIGNATURES.right[1] - SIGNATURES.right[0] - 24;
+  // Maintain the native canvas aspect ratio (640×190 px = 3.368:1) and center
+  // the signature image horizontally within each column's allocated space.
+  const sigNativeAspect = 640 / 190;
   const signatureHeight = SIGNATURES.bottom - SIGNATURES.top;
+  const maxWidthLeft  = SIGNATURES.left[1]  - SIGNATURES.left[0]  - 24;
+  const maxWidthRight = SIGNATURES.right[1] - SIGNATURES.right[0] - 24;
+  const signatureWidthLeft  = Math.min(maxWidthLeft,  signatureHeight * sigNativeAspect);
+  const signatureWidthRight = Math.min(maxWidthRight, signatureHeight * sigNativeAspect);
+  const sigXLeft  = SIGNATURES.left[0]  + 12 + (maxWidthLeft  - signatureWidthLeft)  / 2;
+  const sigXRight = SIGNATURES.right[0] + 12 + (maxWidthRight - signatureWidthRight) / 2;
 
   if (form.firma_cliente_data_url) {
     try {
       doc.addImage(
         form.firma_cliente_data_url,
         'PNG',
-        SIGNATURES.left[0] + 12,
+        sigXLeft,
         SIGNATURES.top,
         signatureWidthLeft,
         signatureHeight,
@@ -848,7 +855,7 @@ function drawObservations(doc, form) {
       doc.addImage(
         form.firma_ingeniero_data_url,
         'PNG',
-        SIGNATURES.right[0] + 12,
+        sigXRight,
         SIGNATURES.top,
         signatureWidthRight,
         signatureHeight,
@@ -858,23 +865,24 @@ function drawObservations(doc, form) {
     }
   }
 
-  drawCellValue(doc, SIGNATURES.left[0], 692.0, SIGNATURES.left[1], SIGNATURES.lineY, form.firma_cliente, {
+  // Printed name sits in the narrow band between the signature image and the line.
+  drawCellValue(doc, SIGNATURES.left[0], SIGNATURES.bottom, SIGNATURES.left[1], SIGNATURES.lineY, form.firma_cliente, {
     size: 6.8,
     align: 'center',
-    padding: 2,
-    maxLines: 2,
+    padding: 1,
+    maxLines: 1,
     valign: 'bottom',
-    minSize: 5.2,
+    minSize: 4.8,
     baselineFactor: 0.72,
   });
 
-  drawCellValue(doc, SIGNATURES.right[0], 692.0, SIGNATURES.right[1], SIGNATURES.lineY, form.firma_ingeniero, {
+  drawCellValue(doc, SIGNATURES.right[0], SIGNATURES.bottom, SIGNATURES.right[1], SIGNATURES.lineY, form.firma_ingeniero, {
     size: 6.8,
     align: 'center',
-    padding: 2,
-    maxLines: 2,
+    padding: 1,
+    maxLines: 1,
     valign: 'bottom',
-    minSize: 5.2,
+    minSize: 4.8,
     baselineFactor: 0.72,
   });
 }

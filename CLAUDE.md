@@ -234,10 +234,37 @@ If it needs re-downloading: `node scripts/download-mongo-binary.js`
 - **Fix in `src/pages/ReportFormPage.jsx`:** `generateDemoSignature()` draws name on a 640×190 canvas, injects PNG data URL into both signature fields in `fillDemo()`
 - **Effect:** One click fills every required field → PDF can be generated immediately
 
-### 3. MongoDB SRV lookup fails on Windows with Node.js
+### 3. Demo "Rellenar demo" failed on second save — "A report with the same folio already exists"
+- `buildDemoForm()` generated `RT-YYYYMMDD-DEMO` (same value all day) → MongoDB unique index rejected the second save
+- `handleSubmit` also had no retry logic, so ANY duplicate folio blocked PDF generation entirely
+- **Fix 1 in `src/lib/reportForm.js`:** demo folio now includes HH:MM:SS → `RT-YYYYMMDD-DEMO-HHmmss`; each "Rellenar demo" click is unique
+- **Fix 2 in `src/pages/ReportFormPage.jsx`:** on 409 duplicate folio, `handleSubmit` auto-appends `-2`, `-3`, … up to 5 retries before showing an error (handles demo AND real duplicate folios)
+- **Fix 3 in `tests/lib/reportForm.test.js`:** updated regex from `/^RT-\d{8}-DEMO$/` to `/^RT-\d{8}-DEMO-\d{6}$/`
+- **Effect:** Demo data can be saved and PDF-generated unlimited times; real duplicate folios also self-heal
+
+### 4. PDF: signature images overlapped the observations/comments section
+- `SIGNATURES.top = 660` was **inside** `OBSERVATIONS.box = [645.2, 681.6]` — 21.6pt overlap
+- Signature images were also stretched (156pt wide × 39pt tall = 4:1 vs native 640×190 = 3.37:1 canvas)
+- **Fix in `src/generarPDF.js`:**
+  - Shortened `OBSERVATIONS.box` bottom from 681.6 → 673.0 (27.8pt content area)
+  - Moved `SIGNATURES.top` from 660.0 → 675.0 (just below observations)
+  - Adjusted `SIGNATURES.bottom` from 699.0 → 705.0 (30pt signature band)
+  - Moved name text cell from hardcoded y=692 → `SIGNATURES.bottom` (705)
+  - Added aspect-ratio-correct rendering: `Math.min(maxWidth, height × 3.368)` + centered horizontally
+- **Effect:** Signatures appear clearly below the comments section with no bleed-through
+
+### 5. MongoDB SRV lookup fails on Windows with Node.js
 - c-ares sends SRV queries over TCP; local Windows networks block TCP port 53
 - **Fix:** use direct shard hostnames in local `.env` (see MongoDB section above)
 - **Effect:** `GET /api/health` returns `{"ok":true}` on first try
+
+---
+
+## Navigation
+
+- Clicking the **Xerox logo + "Xerox Service / Reporte tecnico"** brand area in the header navigates to `/reportes/nuevo` (new report form)
+- Implemented in `AppShell.jsx`: `<BrandMark compact />` is wrapped in `<Link to="/reportes/nuevo" className="brand-home-link">`
+- CSS in `App.css`: `.brand-home-link` keeps flex layout intact, strips underline/color, adds `opacity:0.7` on hover
 
 ---
 
