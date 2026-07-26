@@ -37,21 +37,47 @@ A fullstack web app for Xerox field technicians to capture service reports on-si
 
 - **GitHub:** `https://github.com/Diamond16-lab/APP__`
 - **Remote `main`:** belongs to a *different project* on the same repo — never push the app there
-- **`reporte-tecnico-app`:** Vercel **production** branch → permanent production URL
-- **`staging`:** Vercel **preview** branch → stable staging URL for testing before release
-- **Local `main`:** where all development happens — never pushed to Vercel directly
+- **`reporte-tecnico-app`:** intended Vercel **production** branch (git auto-deploy NOT connected — see below)
+- **`staging`:** intended Vercel **preview** branch
+- **Local `main`:** where all development happens
+- **Live production URL (stable):** `https://reporte-tecnico-diamond1612s-projects.vercel.app`
+  — this Vercel project alias always points at the latest `npx vercel deploy --prod`. Verified working
+  end-to-end on 2026-07-25 (login `admin/Admin123!` → Atlas DB `reporte-tecnico`).
 
 ### Deploy Workflow (one-command deploys)
 
 ```bash
 npm run dev                  # local dev: Vite :5173 + Express :4000
-npm test                     # run 106 tests in ~7s
+npm test                     # run 106 tests in ~7s (much slower on a cold OneDrive cache)
 
+npm run vercel:env           # push .env values to Vercel (rewrites URI to SRV + prod DB)
 npm run deploy:staging       # tests → push main:staging → Vercel preview URL
 npm run deploy:production    # tests → push main:reporte-tecnico-app → Vercel prod URL
 ```
 
-The `predeploy` npm hook blocks pushes automatically if any test fails.
+The `predeploy:staging` / `predeploy:production` hooks run `npm test` and block the push if any
+test fails. **They must keep the `:staging` / `:production` suffix.** npm only fires `pre<script>`
+for the exact script name, so a hook named plain `predeploy` matches a script named `deploy` —
+which does not exist — and silently never runs. (This was the case until 2026-07-16: both deploy
+scripts pushed without ever running the tests.)
+
+> ⚠️ **Git → Vercel auto-deploy is NOT connected.** `vercel link` fails with
+> `You need admin or write access to the repository "APP__"` — the git user is `Diamond16-lab`
+> but the Vercel account is `diamond1612`. Until that is reconciled, `npm run deploy:*` only
+> pushes to GitHub and **never triggers a Vercel build**. Deploy with `npx vercel deploy`
+> (preview) or `npx vercel deploy --prod` in the meantime.
+
+> 🔴 **`vercel.json` must NOT contain a `services` block.** Vercel CLI 56's `vercel link` auto-rewrote
+> `vercel.json` into a `services` microfrontend config. That format stops `api/index.js` from deploying
+> as a serverless function, so every `/api/*` request silently falls through to the SPA `index.html`
+> (the API returns HTML instead of JSON and login/reports break in prod — no error, just wrong response).
+> The correct config is framework `vite` + two rewrites (`/api/(.*)`→`/api/index.js`, `/(.*)`→`/index.html`).
+> After every deploy, verify with: `curl https://reporte-tecnico-diamond1612s-projects.vercel.app/api/health`
+> → must be `{"ok":true}`, never `<!doctype html>`. (This broke prod on 2026-07-25; fixed by removing `services`.)
+
+> ℹ️ **Demo login is public on purpose.** `admin / Admin123!` is shown on the login screen and works in
+> BOTH local and production — this is a portfolio app with fictitious data. See the comment block at the
+> top of `src/pages/LoginPage.jsx` for what to change before pointing this at real client data.
 
 ---
 
@@ -117,6 +143,27 @@ reporte-tecnico_cds/
 ```
 
 ---
+
+## Two Environments — Local (dev) vs Vercel (production)
+
+The two environments differ in exactly two things: **which branch** and **which database**.
+Same code, same Atlas cluster.
+
+| | Local (development) | Vercel (production) |
+|---|---|---|
+| Runs on | `127.0.0.1:5173` + `:4000` (`npm run dev`) | public Vercel URL |
+| Branch | local `main` | `reporte-tecnico-app` |
+| **Database** | **`reporte-tecnico-dev`** | **`reporte-tecnico`** |
+| `MONGODB_URI` | direct shards, in `.env` | `mongodb+srv://`, in Vercel dashboard |
+| Env source | `.env` (gitignored) | Vercel env vars (`npm run vercel:env`) |
+
+**The database names must stay different.** Both point at the same Atlas cluster
+(`cluster0.astms5i.mongodb.net`), and only the DB name in the URI path separates them. If local
+ever points back at `reporte-tecnico`, every "Rellenar demo" click writes junk into real technician
+data. `scripts/setup-vercel-env.ps1` hardcodes the production DB name for this reason — it does not
+copy the DB name out of `.env`.
+
+Each database seeds its own `admin` user independently on first boot (see `seedDefaultUser`).
 
 ## MongoDB Connection — Windows Local Issue
 
@@ -216,8 +263,23 @@ npm run test:coverage   # + lcov coverage report
 | `tests/server/auth.test.js` | 12 | login/logout/session via real HTTP + in-memory MongoDB |
 | `tests/server/reports.test.js` | 20 | create, list/filter, autocomplete, get-by-id, comparison |
 
-**mongodb-memory-server binary** is pre-downloaded locally (~305MB, Windows build).
-If it needs re-downloading: `node scripts/download-mongo-binary.js`
+**mongodb-memory-server binary** must be cached at `~/.cache/mongodb-binaries/` or the two
+integration files (`auth.test.js`, `reports.test.js`) fail with `Hook timed out in 60000ms` while
+`startDb()` tries to download it mid-run. It is **not** bundled and is **not** restored by
+`npm install`. If those two files time out: `node scripts/download-mongo-binary.js` (~110MB zip).
+
+> ⚠️ **This project lives inside OneDrive**, and `node_modules` files are cloud-only placeholders
+> (attribute `4199968` = ARCHIVE+SPARSE+REPARSE+OFFLINE+RECALL_ON_DATA_ACCESS). OneDrive cannot
+> hydrate them fast enough under parallel I/O, which causes:
+> - `Error: UNKNOWN: unknown error, read` / `errno: -4094` — seen crashing `npm run dev` while
+>   `concurrently` loaded `rxjs`. **Intermittent — just re-run the command**; the failed read
+>   hydrates the file for next time.
+> - Wild first-run slowness. Same suite, same machine, same day: **310s** cold (474s of "import"),
+>   **28s** partially hydrated, **6s** fully hydrated. A slow run is a cache symptom, not a regression.
+>
+> These look like code bugs but are not. Real fix: move the repo outside OneDrive, or exclude
+> `node_modules` from sync. Note PowerShell's `$_.Attributes -match 'Offline'` will NOT match these
+> — Windows reports the flags as a raw number.
 
 ---
 

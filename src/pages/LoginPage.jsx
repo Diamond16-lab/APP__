@@ -5,6 +5,15 @@ import { BrandMark } from '../components/BrandMark';
 import { Input } from '../components/FormFields';
 import { LoadingScreen } from '../components/LoadingScreen';
 
+// Credenciales de demo, publicas a proposito: esta es una app de portafolio y todos los datos
+// son ficticios. El mismo acceso funciona en local y en produccion para que se pueda probar
+// igual en ambos.
+// Si algun dia guarda informacion real de clientes: quitar este bloque, cambiar el hash del
+// admin en Mongo (SEED_PASSWORD no basta, seedDefaultUser solo actua con la coleccion vacia)
+// y revisar el guardado de produccion en server/utils/seedDefaultUser.js.
+const DEMO_USERNAME = 'admin';
+const DEMO_PASSWORD = 'Admin123!';
+
 export function LoginPage() {
   const { user, booting, login } = useAuth();
   const location = useLocation();
@@ -38,8 +47,8 @@ export function LoginPage() {
   };
 
   const fillDemoAccess = () => {
-    setUsername('admin');
-    setPassword('Admin123!');
+    setUsername(DEMO_USERNAME);
+    setPassword(DEMO_PASSWORD);
     setError('');
   };
 
@@ -70,7 +79,7 @@ export function LoginPage() {
             <p className="eyebrow">Acceso seguro</p>
             <h2 className="card-title">Bienvenido</h2>
             <p className="card-copy">
-              Ingresa con tu usuario tecnico. Para pruebas locales puedes rellenar el acceso demo.
+              Ingresa con tu usuario tecnico. Para probar puedes rellenar el acceso demo.
             </p>
           </div>
 
@@ -103,7 +112,7 @@ export function LoginPage() {
           </button>
 
           <div className="login-hint">
-            Usuario inicial por defecto: <strong>admin</strong> / Contrasena: <strong>Admin123!</strong>
+            Acceso demo: <strong>{DEMO_USERNAME}</strong> / <strong>{DEMO_PASSWORD}</strong>
           </div>
         </form>
       </div>

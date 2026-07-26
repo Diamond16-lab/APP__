@@ -130,12 +130,18 @@ const OBSERVATIONS = {
   box: [645.2, 673.0],  // shortened bottom so signatures start below observations
 };
 
+// Template geometry measured from public/reporte-template.png (2550x3300 px @ 300dpi):
+//   certification sentence "El equipo ha quedado..." occupies y 683.8–687.4pt
+//   the signature underline is at y 713.8pt
+//   the "NOMBRE, FIRMA..." labels start at y 717.1pt
+// The signature image must sit in the blank band BELOW the certification text and ABOVE the
+// printed name (which sits just above the underline). top=689 clears the certification line.
 const SIGNATURES = {
   lineY: 713.9,
   left: [70.0, 250.0],
   right: [382.0, 547.0],
-  top: 675.0,   // was 660 — now clearly below observations (673), no overlap
-  bottom: 705.0, // 30pt signature band, ends before name text and line
+  top: 689.0,   // was 675 — overlapped the "El equipo ha quedado..." certification line (683.8–687.4)
+  bottom: 705.0, // image ends here; printed name occupies 705→713.9 just above the underline
 };
 
 async function loadTemplateDataUrl() {
@@ -717,12 +723,12 @@ function drawTechnicalAndParts(doc, form) {
   const tables = [PARTS.leftTable, PARTS.rightTable];
   tables.forEach((table) => {
     strokeRect(doc, table.outerLeft, yPartsHeader1, table.outerRight, yPartsHeader2);
-    drawLine(doc, table.empty[1], yPartsHeader1, table.empty[1], PARTS.bottom);
-    drawLine(doc, table.shade[1], yPartsHeader1, table.shade[1], PARTS.bottom);
+    // "NUM. DE PARTE" is a single merged cell (empty+shade+num). The former empty/shade
+    // sub-columns and their grey fill are gone so the part number reads as one clean cell
+    // aligned with its header, instead of looking tucked under separate cells.
     drawLine(doc, table.num[1], yPartsHeader1, table.num[1], PARTS.bottom);
     drawLine(doc, table.qty[1], yPartsHeader1, table.qty[1], PARTS.bottom);
     drawLine(doc, table.fte[1], yPartsHeader1, table.fte[1], PARTS.bottom);
-    fillRect(doc, table.shade[0], yPartsHeader2, table.shade[1], PARTS.bottom, 216, 216, 216);
     drawLabel(doc, table.empty[0], yPartsHeader1, table.num[1], yPartsHeader2, 'NUM. DE PARTE', { size: 5.7 });
     drawLabel(doc, table.num[1], yPartsHeader1, table.qty[1], yPartsHeader2, 'CANT', { size: 5.3 });
     drawLabel(doc, table.qty[1], yPartsHeader1, table.fte[1], yPartsHeader2, 'FTE.', { size: 5.1 });
@@ -742,9 +748,9 @@ function drawTechnicalAndParts(doc, form) {
     const y1 = yPartsHeader2 + rowIndex * rowHeight;
     const y2 = y1 + rowHeight;
 
-    drawCellValue(doc, table.num[0], y1, table.num[1], y2, part.num_parte, {
+    drawCellValue(doc, table.empty[0], y1, table.num[1], y2, part.num_parte, {
       size: 5.8,
-      padding: 2,
+      padding: 4,
       maxLines: 1,
       minSize: 4.8,
       baselineFactor: 0.72,

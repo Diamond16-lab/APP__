@@ -34,3 +34,5 @@ Captura de pantalla*.png
 dev-*.log
 vite-dev*.log
 server*.log
+.vercel
+.env*

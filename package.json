@@ -15,8 +15,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "predeploy": "npm test",
+    "vercel:env": "powershell -ExecutionPolicy Bypass -File scripts/setup-vercel-env.ps1",
+    "predeploy:staging": "npm test",
     "deploy:staging": "git push origin main:staging",
+    "predeploy:production": "npm test",
     "deploy:production": "git push origin main:reporte-tecnico-app"
   },
   "dependencies": {
