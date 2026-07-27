@@ -27,7 +27,7 @@ A fullstack web app for Xerox field technicians to capture service reports on-si
 | Backend | Express 5 + Mongoose 9 (port 4000 in dev) |
 | Database | MongoDB Atlas (cloud) |
 | Auth | JWT via httpOnly cookie `rt_session` (7-day expiry) |
-| PDF | jsPDF + PNG template at `public/reporte-template.png` |
+| PDF | jsPDF (Flate-compressed, `compress: true`) + PNG template at `public/reporte-template.png` |
 | Tests | Vitest 4 — 106 tests (74 unit + 32 integration) |
 | Deployment | Vercel (primary) + Render.com (also configured) |
 
@@ -41,8 +41,9 @@ A fullstack web app for Xerox field technicians to capture service reports on-si
 - **`staging`:** intended Vercel **preview** branch
 - **Local `main`:** where all development happens
 - **Live production URL (stable):** `https://reporte-tecnico-diamond1612s-projects.vercel.app`
-  — this Vercel project alias always points at the latest `npx vercel deploy --prod`. Verified working
-  end-to-end on 2026-07-25 (login `admin/Admin123!` → Atlas DB `reporte-tecnico`).
+  — this Vercel project alias points at the latest production deploy (now auto-built from a push to
+  `reporte-tecnico-app`). Verified end-to-end 2026-07-26 at commit `5b5ba17`
+  (login `admin/Admin123!` → Atlas DB `reporte-tecnico`).
 
 ### Deploy Workflow — A SINGLE PUSH NOW AUTO-DEPLOYS
 
@@ -327,16 +328,33 @@ integration files (`auth.test.js`, `reports.test.js`) fail with `Hook timed out 
 - Signature images were also stretched (156pt wide × 39pt tall = 4:1 vs native 640×190 = 3.37:1 canvas)
 - **Fix in `src/generarPDF.js`:**
   - Shortened `OBSERVATIONS.box` bottom from 681.6 → 673.0 (27.8pt content area)
-  - Moved `SIGNATURES.top` from 660.0 → 675.0 (just below observations)
-  - Adjusted `SIGNATURES.bottom` from 699.0 → 705.0 (30pt signature band)
-  - Moved name text cell from hardcoded y=692 → `SIGNATURES.bottom` (705)
+  - Moved `SIGNATURES.top` to **689.0** — below the "El equipo ha quedado…" certification line
+    (measured at y 683.8–687.4pt on the template; the interim value 675 still overlapped it, fixed 2026-07-26)
+  - Adjusted `SIGNATURES.bottom` from 699.0 → 705.0 (image band; printed name sits 705→713.9, just above the underline)
   - Added aspect-ratio-correct rendering: `Math.min(maxWidth, height × 3.368)` + centered horizontally
-- **Effect:** Signatures appear clearly below the comments section with no bleed-through
+- **Effect:** Signatures appear clearly below the certification line with no bleed-through, at any drawn size
 
 ### 5. MongoDB SRV lookup fails on Windows with Node.js
 - c-ares sends SRV queries over TCP; local Windows networks block TCP port 53
 - **Fix:** use direct shard hostnames in local `.env` (see MongoDB section above)
 - **Effect:** `GET /api/health` returns `{"ok":true}` on first try
+
+### 6. PDF parts table: "NUM. DE PARTE" number looked tucked under empty/grey sub-cells
+- The header spanned `empty+shade+num`, but the value was drawn only in the narrow `num` sub-column —
+  after an empty column and a grey column — so the part number looked misaligned / "below" its header
+- **Fix in `src/generarPDF.js` (`drawTechnicalAndParts`):** removed the `empty[1]` and `shade[1]` interior
+  dividers and the grey `fillRect`; the value now spans the merged cell `empty[0]→num[1]` (padding 4).
+  Applies to both left and right tables (`PARTS.leftTable.shade` / `empty[1]` are now unused coords)
+- **Effect:** the part number reads as one clean merged cell aligned with its header
+
+### 7. PDF weighed ~24 MB for a single page
+- `new jsPDF({...})` was created **without `compress`**, so jsPDF decoded the 2550×3300 template PNG to
+  raw RGB (2550×3300×3 ≈ 25 MB) and embedded it **uncompressed** (also why some PDF readers misreported
+  the 1-page file as "254 pages")
+- **Fix in `src/generarPDF.js`:** added `compress: true` to the `new jsPDF({...})` options — Flate-compresses
+  the stream, **lossless** (identical pixels)
+- **Effect:** report PDFs went ~24 MB → ~0.38 MB (~63×), open instantly, emailable.
+  ⚠️ **Do not remove `compress: true`** — the file re-bloats to 24 MB
 
 ---
 
