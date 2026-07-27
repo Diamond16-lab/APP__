@@ -37,35 +37,34 @@ A fullstack web app for Xerox field technicians to capture service reports on-si
 
 - **GitHub:** `https://github.com/Diamond16-lab/APP__`
 - **Remote `main`:** belongs to a *different project* on the same repo — never push the app there
-- **`reporte-tecnico-app`:** intended Vercel **production** branch (git auto-deploy NOT connected — see below)
+- **`reporte-tecnico-app`:** Vercel **production** branch — git auto-deploy **CONNECTED** (a push here auto-builds prod)
 - **`staging`:** intended Vercel **preview** branch
 - **Local `main`:** where all development happens
 - **Live production URL (stable):** `https://reporte-tecnico-diamond1612s-projects.vercel.app`
   — this Vercel project alias always points at the latest `npx vercel deploy --prod`. Verified working
   end-to-end on 2026-07-25 (login `admin/Admin123!` → Atlas DB `reporte-tecnico`).
 
-### Deploy Workflow — CURRENT FLOW IS TWO MANUAL STEPS
+### Deploy Workflow — A SINGLE PUSH NOW AUTO-DEPLOYS
 
-Git → Vercel auto-deploy is **not connected** (see warning below), so publishing a change today
-takes **two separate commands** — `git push` only backs the code up to GitHub; it does NOT build
-on Vercel. `npx vercel deploy --prod` is what actually publishes.
+Git → Vercel auto-deploy is **connected** (since 2026-07-26, see note below). A push to
+`reporte-tecnico-app` triggers a Vercel **production** build automatically — no second command
+needed. `npm run deploy:production` runs the tests, then that push alone publishes.
 
 ```bash
 npm run dev                  # local dev: Vite :5173 + Express :4000
 npm test                     # run 106 tests in ~7s (much slower on a cold OneDrive cache)
 
-# --- publish a change (do BOTH, in order) ---
-npm run deploy:production    # STEP 1: runs tests, then git push main:reporte-tecnico-app
-                             #         (backs code up to GitHub — does NOT trigger a Vercel build)
-npx vercel deploy --prod     # STEP 2: actually builds & publishes to the live prod URL
-                             #         then verify: curl <prod-url>/api/health  → {"ok":true}
+# --- publish a change (one command) ---
+npm run deploy:production    # tests → git push main:reporte-tecnico-app → Vercel AUTO-builds prod
+                             #   verify after ~1 min: curl <prod-url>/api/health → {"ok":true}
+npm run deploy:staging       # tests → git push main:staging → Vercel preview build
 
 npm run vercel:env           # (one-time / when secrets change) push .env values to Vercel
-npm run deploy:staging       # STEP 1 for staging: tests → git push main:staging (backup only)
+npx vercel deploy --prod     # manual publish fallback (bypasses git) — rarely needed now
 ```
 
-GitHub branches `reporte-tecnico-app` (prod) and `staging` are both kept in sync with local `main`
-via `git push` — they are the code backup, not a deploy trigger. (First full sync: 2026-07-26.)
+Both GitHub branches track local `main` via `git push`. A push to `reporte-tecnico-app` auto-deploys
+**production**; a push to `staging` creates a **preview** deploy. (Auto-deploy connected 2026-07-26.)
 
 The `predeploy:staging` / `predeploy:production` hooks run `npm test` and block the push if any
 test fails. **They must keep the `:staging` / `:production` suffix.** npm only fires `pre<script>`
@@ -73,14 +72,18 @@ for the exact script name, so a hook named plain `predeploy` matches a script na
 which does not exist — and silently never runs. (This was the case until 2026-07-16: both deploy
 scripts pushed without ever running the tests.)
 
-> ⚠️ **Git → Vercel auto-deploy is NOT connected.** `vercel link` fails with
-> `You need admin or write access to the repository "APP__"` — the git user is `Diamond16-lab`
-> but the Vercel account is `diamond1612` (two different accounts). Until reconciled, `git push` /
-> `npm run deploy:*` only update GitHub and **never trigger a Vercel build** — you must also run
-> `npx vercel deploy --prod` to publish. To connect it (optional, one-time, requires dashboard
-> access): give `diamond1612` write access to the repo on GitHub, then Vercel project →
-> Settings → Git → Connect Repository → set Production Branch = `reporte-tecnico-app`. After that,
-> a single push to that branch auto-deploys.
+> ✅ **Git → Vercel auto-deploy IS connected** (2026-07-26). Repo `Diamond16-lab/APP__` is linked to
+> the Vercel project `reporte-tecnico`, **Production Branch = `reporte-tecnico-app`** (NOT `main` —
+> `main` belongs to another project; a push there must never deploy here). What it took to connect:
+> the Vercel account's GitHub login had a stale OAuth grant (GitHub returned 401 "Bad credentials",
+> so `vercel git connect` kept failing with "make sure you have access"). Fix: reconnect GitHub under
+> Vercel → account avatar → **Settings → Sign-in Methods / Connections** (re-authorize as
+> `Diamond16-lab`), then `vercel git connect https://github.com/Diamond16-lab/APP__.git` succeeds.
+> The connect defaults Production Branch to `main`; it was corrected via the API
+> `PATCH /v9/projects/{projectId}/branch  {"branch":"reporte-tecnico-app"}` (the dashboard toggle at
+> Settings → Git → Production Branch does the same). If auto-deploy ever stops firing, re-check BOTH:
+> the project `link` is present AND `link.productionBranch === "reporte-tecnico-app"` — a stale GitHub
+> token silently breaks the link again.
 
 > 🔴 **`vercel.json` must NOT contain a `services` block.** Vercel CLI 56's `vercel link` auto-rewrote
 > `vercel.json` into a `services` microfrontend config. That format stops `api/index.js` from deploying
