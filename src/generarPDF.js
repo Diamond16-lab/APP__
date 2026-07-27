@@ -904,6 +904,9 @@ async function buildReportDoc(form) {
     format: 'letter',
     unit: 'pt',
     orientation: 'portrait',
+    // Flate-compress content streams. The Xerox template is decoded to raw RGB by jsPDF
+    // (~25 MB uncompressed); this shrinks the file ~40x with NO visual change (lossless).
+    compress: true,
   });
 
   const templateDataUrl = await loadTemplateDataUrl();
