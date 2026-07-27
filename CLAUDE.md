@@ -44,16 +44,28 @@ A fullstack web app for Xerox field technicians to capture service reports on-si
   — this Vercel project alias always points at the latest `npx vercel deploy --prod`. Verified working
   end-to-end on 2026-07-25 (login `admin/Admin123!` → Atlas DB `reporte-tecnico`).
 
-### Deploy Workflow (one-command deploys)
+### Deploy Workflow — CURRENT FLOW IS TWO MANUAL STEPS
+
+Git → Vercel auto-deploy is **not connected** (see warning below), so publishing a change today
+takes **two separate commands** — `git push` only backs the code up to GitHub; it does NOT build
+on Vercel. `npx vercel deploy --prod` is what actually publishes.
 
 ```bash
 npm run dev                  # local dev: Vite :5173 + Express :4000
 npm test                     # run 106 tests in ~7s (much slower on a cold OneDrive cache)
 
-npm run vercel:env           # push .env values to Vercel (rewrites URI to SRV + prod DB)
-npm run deploy:staging       # tests → push main:staging → Vercel preview URL
-npm run deploy:production    # tests → push main:reporte-tecnico-app → Vercel prod URL
+# --- publish a change (do BOTH, in order) ---
+npm run deploy:production    # STEP 1: runs tests, then git push main:reporte-tecnico-app
+                             #         (backs code up to GitHub — does NOT trigger a Vercel build)
+npx vercel deploy --prod     # STEP 2: actually builds & publishes to the live prod URL
+                             #         then verify: curl <prod-url>/api/health  → {"ok":true}
+
+npm run vercel:env           # (one-time / when secrets change) push .env values to Vercel
+npm run deploy:staging       # STEP 1 for staging: tests → git push main:staging (backup only)
 ```
+
+GitHub branches `reporte-tecnico-app` (prod) and `staging` are both kept in sync with local `main`
+via `git push` — they are the code backup, not a deploy trigger. (First full sync: 2026-07-26.)
 
 The `predeploy:staging` / `predeploy:production` hooks run `npm test` and block the push if any
 test fails. **They must keep the `:staging` / `:production` suffix.** npm only fires `pre<script>`
@@ -63,9 +75,12 @@ scripts pushed without ever running the tests.)
 
 > ⚠️ **Git → Vercel auto-deploy is NOT connected.** `vercel link` fails with
 > `You need admin or write access to the repository "APP__"` — the git user is `Diamond16-lab`
-> but the Vercel account is `diamond1612`. Until that is reconciled, `npm run deploy:*` only
-> pushes to GitHub and **never triggers a Vercel build**. Deploy with `npx vercel deploy`
-> (preview) or `npx vercel deploy --prod` in the meantime.
+> but the Vercel account is `diamond1612` (two different accounts). Until reconciled, `git push` /
+> `npm run deploy:*` only update GitHub and **never trigger a Vercel build** — you must also run
+> `npx vercel deploy --prod` to publish. To connect it (optional, one-time, requires dashboard
+> access): give `diamond1612` write access to the repo on GitHub, then Vercel project →
+> Settings → Git → Connect Repository → set Production Branch = `reporte-tecnico-app`. After that,
+> a single push to that branch auto-deploys.
 
 > 🔴 **`vercel.json` must NOT contain a `services` block.** Vercel CLI 56's `vercel link` auto-rewrote
 > `vercel.json` into a `services` microfrontend config. That format stops `api/index.js` from deploying
